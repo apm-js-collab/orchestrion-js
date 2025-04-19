@@ -19,27 +19,27 @@
  * This product includes software developed at Datadog (<https://www.datadoghq.com>/). Copyright 2025 Datadog, Inc.
  **/
 use std::path::PathBuf;
-use std::str::FromStr;
-
-use swc_core::ecma::{
-    ast::{
-        AssignExpr, ClassDecl, ClassMethod, Constructor, FnDecl, MethodProp, Module, Script, Str,
-        VarDecl,
+use swc_core::{
+    ecma::{
+        ast::{
+            AssignExpr, ClassDecl, ClassMethod, Constructor, FnDecl, MethodProp, Module, Script,
+            Str, VarDecl,
+        },
+        visit::{VisitMut, VisitMutWith},
     },
-    visit::{VisitMut, VisitMutWith},
+    quote,
 };
-use swc_core::quote;
 
 mod error;
-use error::OrchestrionError;
 
 mod config;
-use config::Config;
+pub use config::*;
 
 mod instrumentation;
 pub use instrumentation::*;
 
 mod function_query;
+pub use function_query::*;
 
 /// This struct is responsible for managing all instrumentations. It's created from a YAML string
 /// via the [`FromStr`] trait. See tests for examples, but by-and-large this just means you can
@@ -52,7 +52,7 @@ pub struct Instrumentor {
 }
 
 impl Instrumentor {
-    fn new(config: Config) -> Self {
+    pub fn new(config: Config) -> Self {
         Self {
             instrumentations: config
                 .instrumentations
@@ -75,18 +75,12 @@ impl Instrumentor {
             .instrumentations
             .iter_mut()
             .filter(|instr| instr.matches(module_name, version, file_path));
+
         InstrumentationVisitor::new(instrumentations, self.dc_module.as_ref())
     }
 }
 
-impl FromStr for Instrumentor {
-    type Err = OrchestrionError;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        Config::from_yaml_data(s).map(Self::new)
-    }
-}
-
+#[derive(Debug)]
 pub struct InstrumentationVisitor<'a> {
     instrumentations: Vec<&'a mut Instrumentation>,
     dc_module: &'a str,

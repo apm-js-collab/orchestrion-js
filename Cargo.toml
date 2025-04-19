@@ -9,17 +9,15 @@ license = "Apache-2.0"
 # crate-type = ["cdylib"]
 # This was originally set as above, but commented to run tests in tests folder.
 
-
 [profile.release]
 lto = true
 
 [dependencies]
-nodejs-semver = "4.1.0"
-swc = "16.1.0"
-swc_core = { version = "16.2.3", features = ["ecma_plugin_transform","ecma_quote"] }
-swc_ecma_parser = "10.0.0"
-swc_ecma_visit = { version = "8.0.0", features = ["path"] }
-yaml-rust2 = "0.10.0"
+nodejs-semver = "4"
+swc = "21"
+swc_core = { version = "22", features = ["ecma_plugin_transform","ecma_quote"] }
+swc_ecma_parser = "11"
+swc_ecma_visit = { version = "8", features = ["path"] }
 
 [dev-dependencies]
-assert_cmd = "2.0.16"
+assert_cmd = "2"

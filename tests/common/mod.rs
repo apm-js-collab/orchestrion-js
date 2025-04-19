@@ -83,41 +83,30 @@ fn transpile(
     .unwrap()
 }
 
-pub fn init_instrumentor(test_name: &str) -> Instrumentor {
-    let mut file = get_dir(test_name);
-    file.push("instrumentations.yml");
-    let yaml = std::fs::read_to_string(file).unwrap();
-    yaml.parse().unwrap()
-}
+pub fn transpile_and_test(test_file: &str, mjs: bool, config: Config) {
+    let test_file = PathBuf::from(test_file);
+    let test_dir = test_file.parent().expect("Couldn't find test directory");
 
-fn get_dir(test_name: &str) -> PathBuf {
-    let mut dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
-    dir.push("tests");
-    dir.push(test_name);
-    dir
-}
+    let file_path = test_dir.join("index.mjs");
+    let mut instrumentor = Instrumentor::new(config);
+    let mut instrumentations =
+        instrumentor.get_matching_instrumentations("undici", "0.0.1", &file_path);
 
-pub fn transpile_and_test(
-    test_name: &str,
-    mjs: bool,
-    instrumentations: &mut InstrumentationVisitor,
-) {
-    let dir = get_dir(test_name);
     let extension = if mjs { "mjs" } else { "js" };
-    let instrumentable = dir.join(format!("mod.{}", extension));
+    let instrumentable = test_dir.join(format!("mod.{}", extension));
     let mut file = std::fs::File::open(&instrumentable).unwrap();
     let mut contents = String::new();
     file.read_to_string(&mut contents).unwrap();
 
-    let result = transpile(&contents, IsModule::Bool(mjs), instrumentations);
+    let result = transpile(&contents, IsModule::Bool(mjs), &mut instrumentations);
 
-    let instrumented_file = dir.join(format!("instrumented.{}", extension));
+    let instrumented_file = test_dir.join(format!("instrumented.{}", extension));
     let mut file = std::fs::File::create(&instrumented_file).unwrap();
     file.write_all(result.as_bytes()).unwrap();
 
-    let test_file = dir.join(format!("test.{}", extension));
+    let test_file = format!("test.{}", extension);
     Command::new("node")
-        .current_dir(dir)
+        .current_dir(test_dir)
         .stdout(std::process::Stdio::inherit())
         .stderr(std::process::Stdio::inherit())
         .arg(&test_file)

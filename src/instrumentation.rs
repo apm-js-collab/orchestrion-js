@@ -27,6 +27,7 @@ macro_rules! ident {
 ///
 /// [`Instrumentation`]: Instrumentation
 /// [`VisitMut`]: https://rustdoc.swc.rs/swc_core/ecma/visit/trait.VisitMut.html
+#[derive(Debug)]
 pub struct Instrumentation {
     config: InstrumentationConfig,
     count: usize,
@@ -34,7 +35,8 @@ pub struct Instrumentation {
 }
 
 impl Instrumentation {
-    pub(crate) fn new(config: InstrumentationConfig) -> Self {
+    #[must_use]
+    pub fn new(config: InstrumentationConfig) -> Self {
         Self {
             config,
             count: 0,
@@ -230,7 +232,7 @@ impl Instrumentation {
             .function_query
             .class
             .as_ref()
-            .map_or(true, |class| node.ident.sym.as_ref() == class);
+            .is_none_or(|class| node.ident.sym.as_ref() == class);
         true
     }
 
