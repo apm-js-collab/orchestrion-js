@@ -1,7 +1,5 @@
 use crate::common::*;
-use nodejs_semver::Range;
 use orchestrion_js::*;
-use std::path::PathBuf;
 
 #[test]
 fn polyfill_cjs() {
@@ -9,21 +7,12 @@ fn polyfill_cjs() {
         file!(),
         false,
         Config::new(
-            vec![InstrumentationConfig {
-                module_name: "undici".to_string(),
-                version_range: Range::parse(">=0.0.1").unwrap(),
-                file_path: PathBuf::from("tests/polyfill_cjs/index.mjs"),
-                function_query: FunctionQuery {
-                    class: None,
-                    name: "fetch".to_string(),
-                    typ: FunctionType::FunctionDeclaration,
-                    kind: FunctionKind::Async,
-                    index: 0,
-                },
-                operator: InstrumentationOperator::Promise,
-                channel_name: "fetch_decl".to_string(),
-            }],
-            "./polyfill.js".to_string(),
+            vec![InstrumentationConfig::new(
+                ModuleMatcher::new("undici", ">=0.0.1", "tests/polyfill_cjs/index.mjs").unwrap(),
+                FunctionQuery::function_declaration("fetch", FunctionKind::Async),
+                "fetch_decl",
+            )],
+            Some("./polyfill.js".to_string()),
         ),
     );
 }
