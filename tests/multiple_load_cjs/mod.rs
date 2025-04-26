@@ -7,7 +7,7 @@ fn multiple_load_cjs() {
         file!(),
         false,
         Config::new_single(InstrumentationConfig::new(
-            ModuleMatcher::new("undici", ">=0.0.1", "tests/multiple_load_cjs/index.mjs").unwrap(),
+            test_module_matcher(),
             FunctionQuery::class_method("Undici", "fetch", FunctionKind::Async),
             "Undici_fetch",
         )),

@@ -8,7 +8,7 @@ fn polyfill_mjs() {
         true,
         Config::new(
             vec![InstrumentationConfig::new(
-                ModuleMatcher::new("undici", ">=0.0.1", "tests/polyfill_mjs/index.mjs").unwrap(),
+                test_module_matcher(),
                 FunctionQuery::function_declaration("fetch", FunctionKind::Async),
                 "fetch_decl",
             )],

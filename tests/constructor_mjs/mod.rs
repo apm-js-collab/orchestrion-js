@@ -7,7 +7,7 @@ fn constructor_mjs() {
         file!(),
         true,
         Config::new_single(InstrumentationConfig::new(
-            ModuleMatcher::new("undici", ">=0.0.1", "tests/constructor_mjs/index.mjs").unwrap(),
+            test_module_matcher(),
             FunctionQuery::class_constructor("Undici"),
             "Undici_constructor",
         )),

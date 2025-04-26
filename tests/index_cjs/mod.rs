@@ -7,7 +7,7 @@ fn index_cjs() {
         file!(),
         false,
         Config::new_single(InstrumentationConfig::new(
-            ModuleMatcher::new("undici", ">=0.0.1", "tests/index_cjs/index.mjs").unwrap(),
+            test_module_matcher(),
             FunctionQuery::ClassMethod {
                 class_name: "Undici".to_string(),
                 method_name: "fetch".to_string(),

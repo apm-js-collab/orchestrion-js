@@ -7,7 +7,7 @@ fn decl_cjs() {
         file!(),
         false,
         Config::new_single(InstrumentationConfig::new(
-            ModuleMatcher::new("undici", ">=0.0.1", "tests/decl_cjs/index.mjs").unwrap(),
+            test_module_matcher(),
             FunctionQuery::function_declaration("fetch", FunctionKind::Async),
             "fetch_decl",
         )),
