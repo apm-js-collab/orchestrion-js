@@ -83,15 +83,15 @@ fn transpile(
     .unwrap()
 }
 
-static TEST_MODULE_NAME: &'static str = "undici";
-static TEST_MODULE_PATH: &'static str = "index.mjs";
+static TEST_MODULE_NAME: &str = "undici";
+static TEST_MODULE_PATH: &str = "index.mjs";
 
 pub fn transpile_and_test(test_file: &str, mjs: bool, config: Config) {
     let test_file = PathBuf::from(test_file);
     let test_dir = test_file.parent().expect("Couldn't find test directory");
 
     let file_path = PathBuf::from("index.mjs");
-    let mut instrumentor = Instrumentor::new(config);
+    let instrumentor = Instrumentor::new(config);
     let mut instrumentations =
         instrumentor.get_matching_instrumentations(TEST_MODULE_NAME, "0.0.1", &file_path);
 
