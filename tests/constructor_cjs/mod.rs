@@ -7,9 +7,9 @@ fn constructor_cjs() {
         file!(),
         false,
         Config::new_single(InstrumentationConfig::new(
+            "Undici_constructor",
             test_module_matcher(),
             FunctionQuery::class_constructor("Undici"),
-            "Undici_constructor",
         )),
     );
 }

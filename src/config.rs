@@ -49,18 +49,18 @@ impl ModuleMatcher {
 #[cfg_attr(feature = "wasm", tsify(into_wasm_abi, from_wasm_abi))]
 #[serde(rename_all = "camelCase")]
 pub struct InstrumentationConfig {
+    pub channel_name: String,
     pub module: ModuleMatcher,
     pub function_query: FunctionQuery,
-    pub channel_name: String,
 }
 
 impl InstrumentationConfig {
     #[must_use]
-    pub fn new(module: ModuleMatcher, function_query: FunctionQuery, channel_name: &str) -> Self {
+    pub fn new(channel_name: &str, module: ModuleMatcher, function_query: FunctionQuery) -> Self {
         Self {
+            channel_name: channel_name.to_string(),
             module,
             function_query,
-            channel_name: channel_name.to_string(),
         }
     }
 }

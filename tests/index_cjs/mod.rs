@@ -7,6 +7,7 @@ fn index_cjs() {
         file!(),
         false,
         Config::new_single(InstrumentationConfig::new(
+            "Undici_fetch",
             test_module_matcher(),
             FunctionQuery::ClassMethod {
                 class_name: "Undici".to_string(),
@@ -14,7 +15,6 @@ fn index_cjs() {
                 kind: FunctionKind::Async,
                 index: 2,
             },
-            "Undici_fetch",
         )),
     );
 }
