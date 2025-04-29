@@ -7,9 +7,9 @@ fn decl_cjs() {
         file!(),
         false,
         Config::new_single(InstrumentationConfig::new(
+            "fetch_decl",
             test_module_matcher(),
             FunctionQuery::function_declaration("fetch", FunctionKind::Async),
-            "fetch_decl",
         )),
     );
 }

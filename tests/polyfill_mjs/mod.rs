@@ -8,9 +8,9 @@ fn polyfill_mjs() {
         true,
         Config::new(
             vec![InstrumentationConfig::new(
+                "fetch_decl",
                 test_module_matcher(),
                 FunctionQuery::function_declaration("fetch", FunctionKind::Async),
-                "fetch_decl",
             )],
             Some("./polyfill.js".to_string()),
         ),
