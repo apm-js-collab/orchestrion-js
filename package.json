@@ -6,7 +6,6 @@
     "./pkg/orchestrion_js_bg.wasm",
     "./pkg/orchestrion_js.js",
     "./pkg/orchestrion_js.d.ts",
-    "LICENSE-3rdparty.csv",
     "LICENSE",
     "NOTICE"
   ],

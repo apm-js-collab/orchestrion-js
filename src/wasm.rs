@@ -32,11 +32,7 @@ pub struct Transformer(InstrumentationVisitor);
 impl Transformer {
     #[wasm_bindgen]
     pub fn transform(&mut self, contents: &str, is_module: bool) -> Result<String, JsValue> {
-        let is_module = if is_module {
-            IsModule::Bool(true)
-        } else {
-            IsModule::Bool(false)
-        };
+        let is_module = IsModule::Bool(is_module);
         self.0
             .transform(contents, is_module)
             .map_err(|e| JsValue::from_str(&e.to_string()))
