@@ -12,9 +12,6 @@ use swc::config::IsModule;
 static TEST_MODULE_NAME: &str = "undici";
 static TEST_MODULE_PATH: &str = "index.mjs";
 
-static TEST_MODULE_NAME: &'static str = "undici";
-static TEST_MODULE_PATH: &'static str = "index.mjs";
-
 pub fn transpile_and_test(test_file: &str, mjs: bool, config: Config) {
     let test_file = PathBuf::from(test_file);
     let test_dir = test_file.parent().expect("Couldn't find test directory");

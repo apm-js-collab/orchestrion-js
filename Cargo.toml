@@ -9,7 +9,8 @@ license = "Apache-2.0"
 crate-type = ["cdylib", "rlib"]
 
 [features]
-wasm = ["wasm-bindgen", "tsify", "getrandom"]
+serde = ["serde/derive"]
+wasm = ['serde', "wasm-bindgen", "tsify", "getrandom"]
 
 [dependencies]
 nodejs-semver = { version = "4", features = ["serde"] }
@@ -17,9 +18,11 @@ swc = "21"
 swc_core = { version = "22", features = ["ecma_plugin_transform","ecma_quote"] }
 swc_ecma_parser = "11"
 swc_ecma_visit = { version = "8", features = ["path"] }
-serde = { version = "1", features = ["derive"] }
 
-# wasm
+# serde feature
+serde = { version = "1", features = ["derive"], optional = true }
+
+# wasm feature
 wasm-bindgen = { version = "0.2", optional = true }
 tsify = { version='0.5', features = ["js"], optional = true}
 # we need this to enable the js feature

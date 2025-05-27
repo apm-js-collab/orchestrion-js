@@ -2,7 +2,6 @@
  * Unless explicitly stated otherwise all files in this repository are licensed under the Apache-2.0 License.
  * This product includes software developed at Datadog (<https://www.datadoghq.com>/). Copyright 2025 Datadog, Inc.
  **/
-use serde::{Deserialize, Serialize};
 use swc_core::ecma::ast::{FnDecl, FnExpr, Function};
 
 #[derive(Debug, Clone)]
@@ -13,7 +12,8 @@ pub(crate) enum FunctionType {
 }
 
 #[cfg_attr(feature = "wasm", derive(tsify::Tsify))]
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+#[derive(Debug, Clone)]
 pub enum FunctionKind {
     Sync,
     Async,
@@ -43,8 +43,12 @@ impl FunctionKind {
 }
 
 #[cfg_attr(feature = "wasm", derive(tsify::Tsify))]
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(untagged, rename_all_fields = "camelCase")]
+#[cfg_attr(
+    feature = "serde",
+    derive(serde::Serialize, serde::Deserialize),
+    serde(untagged, rename_all_fields = "camelCase")
+)]
+#[derive(Debug, Clone)]
 pub enum FunctionQuery {
     // The order here matters because this enum is untagged, serde will try
     // choose the first variant that matches the data.
@@ -52,34 +56,34 @@ pub enum FunctionQuery {
         class_name: String,
         method_name: String,
         kind: FunctionKind,
-        #[serde(default)]
+        #[cfg_attr(feature = "serde", serde(default))]
         #[cfg_attr(feature = "wasm", tsify(optional))]
         index: usize,
     },
     ClassConstructor {
         class_name: String,
-        #[serde(default)]
+        #[cfg_attr(feature = "serde", serde(default))]
         #[cfg_attr(feature = "wasm", tsify(optional))]
         index: usize,
     },
     ObjectMethod {
         method_name: String,
         kind: FunctionKind,
-        #[serde(default)]
+        #[cfg_attr(feature = "serde", serde(default))]
         #[cfg_attr(feature = "wasm", tsify(optional))]
         index: usize,
     },
     FunctionDeclaration {
         function_name: String,
         kind: FunctionKind,
-        #[serde(default)]
+        #[cfg_attr(feature = "serde", serde(default))]
         #[cfg_attr(feature = "wasm", tsify(optional))]
         index: usize,
     },
     FunctionExpression {
         expression_name: String,
         kind: FunctionKind,
-        #[serde(default)]
+        #[cfg_attr(feature = "serde", serde(default))]
         #[cfg_attr(feature = "wasm", tsify(optional))]
         index: usize,
     },
