@@ -1,5 +1,5 @@
 name: CI
-on: [push]
+on: [push, pull_request]
 env:
   CARGO_TERM_COLOR: always
   RUST_VERSION: 1.84.1
