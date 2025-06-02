@@ -1,5 +1,7 @@
 # `@apm-js-collab/code-transformer`
 
+This is a temporary fork of [`DataDog/orchestrion-js`](https://github.com/DataDog/orchestrion-js/). We intend all changes to be upstreamed to the original repository, 
+
 This is a library for instrumenting Node.js libraries at build or load time.
 
 It provides `VisitMut` implementations for SWC's AST nodes, which can be used to insert tracing code into matching functions. 
