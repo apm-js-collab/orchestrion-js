@@ -13,7 +13,7 @@
   "types": "./pkg/orchestrion_js.d.ts",
   "scripts": {
     "build": "wasm-pack build --target nodejs --release -- --features wasm",
-    "test": "node ./tests/tests.mjs"
+    "test": "node ./tests/wasm/tests.mjs"
   },
   "dependencies": {
     "wasm-pack": "^0.13.1"

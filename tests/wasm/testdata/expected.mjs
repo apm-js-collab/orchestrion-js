@@ -1,37 +1,4 @@
-import { create } from "../pkg/orchestrion_js.js";
-import * as assert from "node:assert";
-
-const instrumentor = create([
-    {
-        channelName: "up:constructor",
-        module: { name: "one", versionRange: ">=1", filePath: "index.js" },
-        functionQuery: { className: "Up" },
-    },
-    {
-        channelName: "up:fetch",
-        module: { name: "one", versionRange: ">=1", filePath: "index.js" },
-        functionQuery: {
-            className: "Up",
-            methodName: "fetch",
-            kind: "Sync",
-        },
-    },
-]);
-
-const matchedTransforms = instrumentor.getTransformer(
-    "one",
-    "1.0.0",
-    "index.js",
-);
-
-assert.ok(matchedTransforms);
-
-const output = matchedTransforms.transform(
-    "export class Up { constructor() {console.log('constructor')} fetch() {console.log('fetch')} }",
-    true,
-);
-
-assert.strictEqual(output, `import { tracingChannel as tr_ch_apm_tracingChannel } from "diagnostics_channel";
+import { tracingChannel as tr_ch_apm_tracingChannel } from "diagnostics_channel";
 const tr_ch_apm$up:fetch = tr_ch_apm_tracingChannel("orchestrion:one:up:fetch");
 const tr_ch_apm$up:constructor = tr_ch_apm_tracingChannel("orchestrion:one:up:constructor");
 export class Up {
@@ -71,4 +38,3 @@ export class Up {
         });
     }
 }
-`);
