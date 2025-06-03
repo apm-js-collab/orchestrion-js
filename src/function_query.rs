@@ -2,7 +2,7 @@
  * Unless explicitly stated otherwise all files in this repository are licensed under the Apache-2.0 License.
  * This product includes software developed at Datadog (<https://www.datadoghq.com>/). Copyright 2025 Datadog, Inc.
  **/
-use swc_core::ecma::ast::{FnDecl, FnExpr, Function};
+use swc_core::ecma::ast::FnDecl;
 
 #[derive(Debug, Clone)]
 pub(crate) enum FunctionType {
@@ -23,14 +23,6 @@ impl FunctionKind {
     #[must_use]
     pub fn is_async(&self) -> bool {
         matches!(self, FunctionKind::Async)
-    }
-
-    #[must_use]
-    pub fn matches(&self, func: &Function) -> bool {
-        match self {
-            FunctionKind::Sync => !func.is_async && !func.is_generator,
-            FunctionKind::Async => func.is_async && !func.is_generator,
-        }
     }
 
     #[must_use]
@@ -202,22 +194,19 @@ impl FunctionQuery {
 
     pub fn matches_decl(&self, func: &FnDecl, count: &mut usize) -> bool {
         let matches_except_count = matches!(self.typ(), FunctionType::FunctionDeclaration)
-            && self.kind().matches(&func.function)
             && func.ident.sym == self.name();
         self.maybe_increment_count(matches_except_count, count)
     }
 
-    pub fn matches_expr(&self, func: &FnExpr, count: &mut usize, name: &str) -> bool {
-        let matches_except_count = matches!(self.typ(), FunctionType::FunctionExpression)
-            && self.kind().matches(&func.function)
-            && name == self.name();
+    pub fn matches_expr(&self, count: &mut usize, name: &str) -> bool {
+        let matches_except_count =
+            matches!(self.typ(), FunctionType::FunctionExpression) && name == self.name();
         self.maybe_increment_count(matches_except_count, count)
     }
 
-    pub fn matches_method(&self, func: &Function, count: &mut usize, name: &str) -> bool {
-        let matches_except_count = matches!(self.typ(), FunctionType::Method)
-            && self.kind().matches(func)
-            && name == self.name();
+    pub fn matches_method(&self, count: &mut usize, name: &str) -> bool {
+        let matches_except_count =
+            matches!(self.typ(), FunctionType::Method) && name == self.name();
         self.maybe_increment_count(matches_except_count, count)
     }
 }

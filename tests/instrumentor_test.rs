@@ -9,6 +9,7 @@ mod constructor_cjs;
 mod constructor_mjs;
 mod decl_cjs;
 mod decl_mjs;
+mod decl_mjs_mismatched_type;
 mod expr_cjs;
 mod expr_mjs;
 mod index_cjs;
