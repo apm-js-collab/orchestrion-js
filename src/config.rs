@@ -73,6 +73,14 @@ impl InstrumentationConfig {
             function_query,
         }
     }
+
+    #[must_use]
+    pub fn get_identifier_name(&self) -> String {
+        self.channel_name
+            .chars()
+            .map(|c| if c.is_ascii_alphanumeric() { c } else { '_' })
+            .collect()
+    }
 }
 
 #[cfg_attr(

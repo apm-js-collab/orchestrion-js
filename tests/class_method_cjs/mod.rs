@@ -7,7 +7,7 @@ fn class_method_cjs() {
         file!(),
         false,
         Config::new_single(InstrumentationConfig::new(
-            "Undici_fetch",
+            "Undici:fetch",
             test_module_matcher(),
             FunctionQuery::class_method("Undici", "fetch", FunctionKind::Async),
         )),

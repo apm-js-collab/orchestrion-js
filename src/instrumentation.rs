@@ -63,7 +63,7 @@ impl Instrumentation {
     }
 
     fn create_tracing_channel(&self) -> Stmt {
-        let ch_str = ident!(format!("tr_ch_apm${}", self.config.channel_name));
+        let ch_str = ident!(format!("tr_ch_apm${}", self.config.get_identifier_name()));
         let channel_string = Expr::Lit(Lit::Str(Str {
             span: Span::default(),
             value: format!(
@@ -95,10 +95,11 @@ impl Instrumentation {
 
         let traced_fn = self.new_fn(original_body);
 
-        let ch_ident = ident!(format!("tr_ch_apm${}", &self.config.channel_name));
+        let id_name = self.config.get_identifier_name();
+        let ch_ident = ident!(format!("tr_ch_apm${}", &id_name));
         let trace_ident = ident!(format!(
             "tr_ch_apm${}.{}",
-            &self.config.channel_name,
+            &id_name,
             self.config.function_query.kind().tracing_operator()
         ));
 
@@ -120,8 +121,9 @@ impl Instrumentation {
 
         let original_stmts = std::mem::take(&mut body.stmts);
 
-        let ch_ident = ident!(format!("tr_ch_apm${}", &self.config.channel_name));
-        let ctx_ident = ident!(format!("tr_ch_apm_ctx${}", &self.config.channel_name));
+        let id_name = self.config.get_identifier_name();
+        let ch_ident = ident!(format!("tr_ch_apm${}", &id_name));
+        let ctx_ident = ident!(format!("tr_ch_apm_ctx${}", &id_name));
         let mut try_catch = quote!(
             "try {
                 if ($ch.hasSubscribers) {
