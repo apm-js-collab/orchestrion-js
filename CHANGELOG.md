@@ -1,3 +1,7 @@
+## 0.3.0
+
+- fix: Handle `module.exports = class Foo` when locating classes (#7)
+
 ## 0.2.0
 
 - fix: Ensure `channel_name` doesn't cause invalid JavaScript identifiers (#4)
