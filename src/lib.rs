@@ -47,6 +47,8 @@ pub use instrumentation::*;
 mod function_query;
 pub use function_query::*;
 
+use crate::error::OrchestrionError;
+
 #[cfg(feature = "wasm")]
 pub mod wasm;
 
@@ -112,6 +114,33 @@ impl InstrumentationVisitor {
         !self.instrumentations.is_empty()
     }
 
+    #[must_use]
+    pub fn get_failed_injections(&self) -> Option<Vec<String>> {
+        let failed: Vec<String> = self
+            .instrumentations
+            .iter()
+            .filter_map(|instr| {
+                if instr.has_injected() {
+                    None
+                } else {
+                    Some(instr.config.function_query.name().to_string())
+                }
+            })
+            .collect();
+
+        if failed.is_empty() {
+            None
+        } else {
+            Some(failed)
+        }
+    }
+
+    pub fn reset_has_injected(&mut self) {
+        for instr in &mut self.instrumentations {
+            instr.reset_has_injected();
+        }
+    }
+
     /// Transform the given JavaScript code.
     /// # Errors
     /// Returns an error if the transformation fails.
@@ -125,7 +154,7 @@ impl InstrumentationVisitor {
         )));
 
         #[allow(clippy::redundant_closure_for_method_calls)]
-        Ok(try_with_handler(
+        let result = try_with_handler(
             compiler.cm.clone(),
             HandlerOpts {
                 color: ColorConfig::Never,
@@ -165,10 +194,20 @@ impl InstrumentationVisitor {
                         ..Default::default()
                     },
                 )?;
+
                 Ok(result.code)
             },
         )
-        .map_err(|e| e.to_pretty_error())?)
+        .map_err(|e| e.to_pretty_error())?;
+
+        let failed_injections = self.get_failed_injections();
+        self.reset_has_injected();
+
+        if let Some(failed) = failed_injections {
+            Err(Box::new(OrchestrionError::InjectionMatchFailure(failed)))
+        } else {
+            Ok(result)
+        }
     }
 }
 

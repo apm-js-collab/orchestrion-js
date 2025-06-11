@@ -29,9 +29,10 @@ macro_rules! ident {
 /// [`VisitMut`]: https://rustdoc.swc.rs/swc_core/ecma/visit/trait.VisitMut.html
 #[derive(Debug, Clone)]
 pub struct Instrumentation {
-    config: InstrumentationConfig,
+    pub(crate) config: InstrumentationConfig,
     count: usize,
     is_correct_class: bool,
+    has_injected: bool,
 }
 
 impl Instrumentation {
@@ -41,12 +42,22 @@ impl Instrumentation {
             config,
             count: 0,
             is_correct_class: false,
+            has_injected: false,
         }
+    }
+
+    #[must_use]
+    pub fn has_injected(&self) -> bool {
+        self.has_injected
     }
 
     pub(crate) fn reset(&mut self) {
         self.count = 0;
         self.is_correct_class = false;
+    }
+
+    pub(crate) fn reset_has_injected(&mut self) {
+        self.has_injected = false;
     }
 
     fn new_fn(&self, body: BlockStmt) -> ArrowExpr {
@@ -114,6 +125,8 @@ impl Instrumentation {
                 trace = trace_ident
             ),
         ];
+
+        self.has_injected = true;
     }
 
     fn insert_constructor_tracing(&mut self, body: &mut BlockStmt) {
@@ -160,6 +173,8 @@ impl Instrumentation {
             quote!("const $ctx = { arguments };" as Stmt, ctx = ctx_ident,),
             try_catch,
         ];
+
+        self.has_injected = true;
     }
 
     fn trace_expr_or_count(&mut self, func_expr: &mut FnExpr, name: &Atom) -> bool {

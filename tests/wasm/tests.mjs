@@ -40,3 +40,9 @@ const outputCjs = matchedTransforms.transform(originalCjs.toString('utf8'), fals
 
 const expectedCjs = await fs.readFile(path.join(import.meta.dirname, './testdata/expected-cjs.js'))
 assert.strictEqual(outputCjs, expectedCjs.toString('utf8'));
+
+const noMatch = await fs.readFile(path.join(import.meta.dirname, './testdata/no-match.mjs'));
+
+assert.throws(() => {
+    matchedTransforms.transform(noMatch.toString('utf8'), true);
+}, { message: "Failed to find injection points for: [\"constructor\", \"fetch\"]" });
