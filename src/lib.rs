@@ -115,10 +115,24 @@ impl InstrumentationVisitor {
     }
 
     #[must_use]
-    pub fn has_injected(&self) -> bool {
-        self.instrumentations
+    pub fn get_failed_injections(&self) -> Option<Vec<String>> {
+        let failed: Vec<String> = self
+            .instrumentations
             .iter()
-            .all(Instrumentation::has_injected)
+            .filter_map(|instr| {
+                if instr.has_injected() {
+                    None
+                } else {
+                    Some(instr.config.function_query.name().to_string())
+                }
+            })
+            .collect();
+
+        if failed.is_empty() {
+            None
+        } else {
+            Some(failed)
+        }
     }
 
     pub fn reset_has_injected(&mut self) {
@@ -186,13 +200,13 @@ impl InstrumentationVisitor {
         )
         .map_err(|e| e.to_pretty_error())?;
 
-        let has_injected = self.has_injected();
+        let failed_injections = self.get_failed_injections();
         self.reset_has_injected();
 
-        if has_injected {
-            Ok(result)
+        if let Some(failed) = failed_injections {
+            Err(Box::new(OrchestrionError::InjectionMatchFailure(failed)))
         } else {
-            Err(Box::new(OrchestrionError::InjectionMatchFailure))
+            Ok(result)
         }
     }
 }

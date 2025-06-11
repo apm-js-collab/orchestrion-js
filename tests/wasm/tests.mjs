@@ -45,4 +45,4 @@ const noMatch = await fs.readFile(path.join(import.meta.dirname, './testdata/no-
 
 assert.throws(() => {
     matchedTransforms.transform(noMatch.toString('utf8'), true);
-}, { message: "Injection match failed" });
+}, { message: "Failed to find injection points for: [\"constructor\", \"fetch\"]" });

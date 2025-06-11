@@ -29,7 +29,7 @@ macro_rules! ident {
 /// [`VisitMut`]: https://rustdoc.swc.rs/swc_core/ecma/visit/trait.VisitMut.html
 #[derive(Debug, Clone)]
 pub struct Instrumentation {
-    config: InstrumentationConfig,
+    pub(crate) config: InstrumentationConfig,
     count: usize,
     is_correct_class: bool,
     has_injected: bool,

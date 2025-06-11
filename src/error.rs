@@ -6,7 +6,7 @@ use std::fmt::{self, Display, Formatter};
 
 #[derive(Debug)]
 pub enum OrchestrionError {
-    InjectionMatchFailure,
+    InjectionMatchFailure(Vec<String>),
 }
 
 impl std::error::Error for OrchestrionError {}
@@ -14,8 +14,8 @@ impl std::error::Error for OrchestrionError {}
 impl Display for OrchestrionError {
     fn fmt(&self, f: &mut Formatter) -> fmt::Result {
         match self {
-            OrchestrionError::InjectionMatchFailure => {
-                write!(f, "Injection match failed")
+            OrchestrionError::InjectionMatchFailure(missing) => {
+                write!(f, "Failed to find injection points for: {missing:?}")
             }
         }
     }
