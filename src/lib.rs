@@ -118,7 +118,7 @@ impl InstrumentationVisitor {
     pub fn has_injected(&self) -> bool {
         self.instrumentations
             .iter()
-            .any(Instrumentation::has_injected)
+            .all(Instrumentation::has_injected)
     }
 
     pub fn reset_has_injected(&mut self) {
