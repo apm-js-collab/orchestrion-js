@@ -47,6 +47,8 @@ pub use instrumentation::*;
 mod function_query;
 pub use function_query::*;
 
+use crate::error::OrchestrionError;
+
 #[cfg(feature = "wasm")]
 pub mod wasm;
 
@@ -112,6 +114,19 @@ impl InstrumentationVisitor {
         !self.instrumentations.is_empty()
     }
 
+    #[must_use]
+    pub fn has_injected(&self) -> bool {
+        self.instrumentations
+            .iter()
+            .any(Instrumentation::has_injected)
+    }
+
+    pub fn reset_has_injected(&mut self) {
+        for instr in &mut self.instrumentations {
+            instr.reset_has_injected();
+        }
+    }
+
     /// Transform the given JavaScript code.
     /// # Errors
     /// Returns an error if the transformation fails.
@@ -125,7 +140,7 @@ impl InstrumentationVisitor {
         )));
 
         #[allow(clippy::redundant_closure_for_method_calls)]
-        Ok(try_with_handler(
+        let result = try_with_handler(
             compiler.cm.clone(),
             HandlerOpts {
                 color: ColorConfig::Never,
@@ -165,10 +180,20 @@ impl InstrumentationVisitor {
                         ..Default::default()
                     },
                 )?;
+
                 Ok(result.code)
             },
         )
-        .map_err(|e| e.to_pretty_error())?)
+        .map_err(|e| e.to_pretty_error())?;
+
+        let has_injected = self.has_injected();
+        self.reset_has_injected();
+
+        if has_injected {
+            Ok(result)
+        } else {
+            Err(Box::new(OrchestrionError::InjectionMatchFailure))
+        }
     }
 }
 

@@ -1,5 +1,7 @@
-use crate::*;
-use wasm_bindgen::{prelude::wasm_bindgen, JsValue};
+use crate::{Config, InstrumentationConfig, InstrumentationVisitor, Instrumentor};
+use std::path::PathBuf;
+use swc::config::IsModule;
+use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
 pub struct InstrumentationMatcher(Instrumentor);
@@ -31,11 +33,11 @@ pub struct Transformer(InstrumentationVisitor);
 #[wasm_bindgen]
 impl Transformer {
     #[wasm_bindgen]
-    pub fn transform(&mut self, contents: &str, is_module: bool) -> Result<String, JsValue> {
+    pub fn transform(&mut self, contents: &str, is_module: bool) -> Result<String, JsError> {
         let is_module = IsModule::Bool(is_module);
         self.0
             .transform(contents, is_module)
-            .map_err(|e| JsValue::from_str(&e.to_string()))
+            .map_err(|e| JsError::new(&e.to_string()))
     }
 }
 

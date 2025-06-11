@@ -27,13 +27,11 @@ pub fn transpile_and_test(test_file: &str, mjs: bool, config: Config) {
     let mut contents = String::new();
     file.read_to_string(&mut contents).unwrap();
 
-    let result = instrumentations
-        .transform(&contents, IsModule::Bool(mjs))
-        .unwrap();
-
-    let instrumented_file = test_dir.join(format!("instrumented.{}", extension));
-    let mut file = std::fs::File::create(&instrumented_file).unwrap();
-    file.write_all(result.as_bytes()).unwrap();
+    if let Ok(result) = instrumentations.transform(&contents, IsModule::Bool(mjs)) {
+        let instrumented_file = test_dir.join(format!("instrumented.{}", extension));
+        let mut file = std::fs::File::create(&instrumented_file).unwrap();
+        file.write_all(result.as_bytes()).unwrap();
+    }
 
     let test_file = format!("test.{}", extension);
     Command::new("node")

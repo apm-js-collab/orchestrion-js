@@ -14,6 +14,7 @@ mod decl_mjs_mismatched_type;
 mod expr_cjs;
 mod expr_mjs;
 mod index_cjs;
+mod injection_failure;
 mod multiple_class_method_cjs;
 mod multiple_load_cjs;
 mod object_method_cjs;
