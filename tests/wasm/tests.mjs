@@ -29,13 +29,13 @@ const matchedTransforms = instrumentor.getTransformer(
 assert.ok(matchedTransforms);
 
 const original = await fs.readFile(path.join(import.meta.dirname, './testdata/original.mjs'))
-const output = matchedTransforms.transform(original.toString('utf8'), true);
+const output = matchedTransforms.transform(original.toString('utf8'), 'unknown');
 
 const expected = await fs.readFile(path.join(import.meta.dirname, './testdata/expected.mjs'))
 assert.strictEqual(output, expected.toString('utf8'));
 
 const originalCjs = await fs.readFile(path.join(import.meta.dirname, './testdata/original-cjs.js'))
-const outputCjs = matchedTransforms.transform(originalCjs.toString('utf8'), false);
+const outputCjs = matchedTransforms.transform(originalCjs.toString('utf8'), 'unknown');
 
 
 const expectedCjs = await fs.readFile(path.join(import.meta.dirname, './testdata/expected-cjs.js'))
@@ -44,5 +44,5 @@ assert.strictEqual(outputCjs, expectedCjs.toString('utf8'));
 const noMatch = await fs.readFile(path.join(import.meta.dirname, './testdata/no-match.mjs'));
 
 assert.throws(() => {
-    matchedTransforms.transform(noMatch.toString('utf8'), true);
+    matchedTransforms.transform(noMatch.toString('utf8'), 'unknown');
 }, { message: "Failed to find injection points for: [\"constructor\", \"fetch\"]" });
