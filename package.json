@@ -19,7 +19,7 @@
     "build": "wasm-pack build --target nodejs --release -- --features wasm",
     "test": "node ./tests/wasm/tests.mjs"
   },
-  "dependencies": {
+  "devDependencies": {
     "wasm-pack": "^0.13.1"
   },
   "volta": {
