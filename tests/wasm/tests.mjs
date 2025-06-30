@@ -29,13 +29,13 @@ const matchedTransforms = instrumentor.getTransformer(
 assert.ok(matchedTransforms);
 
 const original = await fs.readFile(path.join(import.meta.dirname, './testdata/original.mjs'))
-const output = matchedTransforms.transform(original.toString('utf8'), 'unknown');
+const output = matchedTransforms.transform(original.toString('utf8'), 'esm');
 
 const expected = await fs.readFile(path.join(import.meta.dirname, './testdata/expected.mjs'))
 assert.strictEqual(output, expected.toString('utf8'));
 
 const originalCjs = await fs.readFile(path.join(import.meta.dirname, './testdata/original-cjs.js'))
-const outputCjs = matchedTransforms.transform(originalCjs.toString('utf8'), 'unknown');
+const outputCjs = matchedTransforms.transform(originalCjs.toString('utf8'), 'cjs');
 
 
 const expectedCjs = await fs.readFile(path.join(import.meta.dirname, './testdata/expected-cjs.js'))
