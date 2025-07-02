@@ -1,4 +1,4 @@
-use crate::{Config, InstrumentationConfig, InstrumentationVisitor, Instrumentor};
+use crate::{Config, InstrumentationConfig, InstrumentationVisitor, Instrumentor, TransformOutput};
 use std::path::PathBuf;
 use swc::config::IsModule;
 use wasm_bindgen::prelude::*;
@@ -62,6 +62,24 @@ impl Transformer {
     pub fn transform(&mut self, contents: &str, is_module: ModuleType) -> Result<String, JsError> {
         self.0
             .transform(contents, is_module.into())
+            .map_err(|e| JsError::new(&e.to_string()))
+    }
+
+    #[wasm_bindgen(js_name = "transformWithSourcemap")]
+    pub fn transform_with_sourcemap(
+        &mut self,
+        filename: &str,
+        contents: &str,
+        is_module: ModuleType,
+        input_sourcemap: &str,
+    ) -> Result<TransformOutput, JsError> {
+        self.0
+            .transform_with_sourcemap(
+                contents,
+                is_module.into(),
+                Some(input_sourcemap),
+                Some(filename),
+            )
             .map_err(|e| JsError::new(&e.to_string()))
     }
 }

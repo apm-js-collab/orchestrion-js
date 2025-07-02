@@ -17,9 +17,11 @@
   "types": "./pkg/orchestrion_js.d.ts",
   "scripts": {
     "build": "wasm-pack build --target nodejs --release -- --features wasm",
-    "test": "node ./tests/wasm/tests.mjs"
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "devDependencies": {
+    "vitest": "^3.2.4",
     "wasm-pack": "^0.13.1"
   },
   "volta": {

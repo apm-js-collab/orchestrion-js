@@ -18,6 +18,7 @@ swc = "21"
 swc_core = { version = "22", features = ["ecma_plugin_transform","ecma_quote"] }
 swc_ecma_parser = "11"
 swc_ecma_visit = { version = "8", features = ["path"] }
+sourcemap = "9"
 
 # serde feature
 serde = { version = "1", features = ["derive"], optional = true }
