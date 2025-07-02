@@ -28,11 +28,11 @@ module.exports = class Up {
         }
     }
     fetch() {
-        const traced = ()=>{
+        const __apm$traced = ()=>{
             console.log('fetch');
         };
-        if (!tr_ch_apm$up_fetch.hasSubscribers) return traced();
-        return tr_ch_apm$up_fetch.traceSync(traced, {
+        if (!tr_ch_apm$up_fetch.hasSubscribers) return __apm$traced();
+        return tr_ch_apm$up_fetch.traceSync(__apm$traced, {
             arguments,
             self: this
         });
