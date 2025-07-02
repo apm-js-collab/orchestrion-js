@@ -1,3 +1,10 @@
+## 0.4.0
+
+- feat: Error when code injection fails (#9)
+- feat: Allow `unknown` module type (#11)
+- fix: `wasm-pack` should be in `devDependencies` (#12)
+- fix: Use uniquely named local variables (#13)
+
 ## 0.3.0
 
 - fix: Handle `module.exports = class Foo` when locating classes (#7)
