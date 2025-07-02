@@ -1,4 +1,4 @@
-use crate::{Config, InstrumentationConfig, InstrumentationVisitor, Instrumentor};
+use crate::{Config, InstrumentationConfig, InstrumentationVisitor, Instrumentor, TransformOutput};
 use std::path::PathBuf;
 use swc::config::IsModule;
 use wasm_bindgen::prelude::*;
@@ -58,15 +58,25 @@ pub struct Transformer(InstrumentationVisitor);
 
 #[wasm_bindgen]
 impl Transformer {
+    /// Transform the given JavaScript code with optional sourcemap support.
+    /// # Errors
+    /// Returns an error if the transformation fails to find injection points.
     #[wasm_bindgen]
-    pub fn transform(&mut self, contents: &str, is_module: ModuleType) -> Result<String, JsError> {
+    #[allow(clippy::needless_pass_by_value)]
+    pub fn transform(
+        &mut self,
+        code: String,
+        module_type: ModuleType,
+        sourcemap: Option<String>,
+    ) -> Result<TransformOutput, JsError> {
         self.0
-            .transform(contents, is_module.into())
+            .transform(&code, module_type.into(), sourcemap.as_deref())
             .map_err(|e| JsError::new(&e.to_string()))
     }
 }
 
 #[wasm_bindgen]
+#[must_use]
 pub fn create(
     configs: Vec<InstrumentationConfig>,
     dc_module: Option<String>,
