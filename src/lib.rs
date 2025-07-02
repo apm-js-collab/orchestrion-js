@@ -160,35 +160,24 @@ impl InstrumentationVisitor {
         }
     }
 
-    /// Transform the given JavaScript code.
+    /// Transform the given JavaScript code with sourcemap support.
     /// # Errors
     /// Returns an error if the transformation fails.
     pub fn transform(
         &mut self,
         contents: &str,
         is_module: IsModule,
-    ) -> Result<String, Box<dyn Error>> {
-        self.transform_with_sourcemap(contents, is_module, None, None)
-            .map(|result| result.code)
-    }
-
-    /// Transform the given JavaScript code with sourcemap support.
-    /// # Errors
-    /// Returns an error if the transformation fails.
-    pub fn transform_with_sourcemap(
-        &mut self,
-        contents: &str,
-        is_module: IsModule,
-        input_sourcemap: Option<&str>,
-        filename: Option<&str>,
+        sourcemap: Option<&str>,
     ) -> Result<TransformOutput, Box<dyn Error>> {
-        // Parse input sourcemap if provided
-        let input_sourcemap_parsed = input_sourcemap
-            .and_then(|input_map| sourcemap::SourceMap::from_slice(input_map.as_bytes()).ok());
-
         let compiler = Compiler::new(Arc::new(swc_core::common::SourceMap::new(
             FilePathMapping::empty(),
         )));
+
+        // Parse input sourcemap if provided
+        let sourcemap = sourcemap
+            .and_then(|input_map| sourcemap::SourceMap::from_slice(input_map.as_bytes()).ok());
+
+        let filename = sourcemap.as_ref().and_then(|map| map.get_file());
 
         #[allow(clippy::redundant_closure_for_method_calls)]
         let result = try_with_handler(
@@ -226,7 +215,7 @@ impl InstrumentationVisitor {
                         program
                     })?;
 
-                let enable_sourcemap = input_sourcemap.is_some() || filename.is_some();
+                let enable_sourcemap = sourcemap.is_some();
                 let result = compiler.print(
                     &program,
                     PrintArgs {
@@ -234,7 +223,7 @@ impl InstrumentationVisitor {
                         source_map: SourceMapsConfig::Bool(enable_sourcemap),
                         comments: None,
                         emit_source_map_columns: true,
-                        orig: input_sourcemap_parsed.as_ref(),
+                        orig: sourcemap.as_ref(),
                         ..Default::default()
                     },
                 )?;

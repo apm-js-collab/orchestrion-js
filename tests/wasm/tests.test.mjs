@@ -72,15 +72,13 @@ describe('Orchestrion JS Transformer', () => {
 
         const originalTypescriptSourceMap = `{"version":3,"file":"typescript.js","sourceRoot":"","sources":["typescript.ts"],"names":[],"mappings":"AAAA,MAAM,OAAO,EAAE;IACd;QACC,OAAO,CAAC,GAAG,CAAC,aAAa,CAAC,CAAA;IAC3B,CAAC;IAED,KAAK,CAAC,GAAW;QAChB,OAAO,CAAC,GAAG,CAAC,OAAO,CAAC,CAAA;IACrB,CAAC;CACD"}`;
 
-        const outputTs = matchedTransforms.transformWithSourcemap(
-            "typescript.js",
+        const outputTs = matchedTransforms.transform(
             originalTypescript,
             "esm",
             originalTypescriptSourceMap,
         );
 
-        expect(outputTs.code).toMatchSnapshot();
-        expect(outputTs.map).toMatchSnapshot();
+        expect(outputTs).toMatchSnapshot();
     });
 
     test('should throw error when no injection points are found', () => {

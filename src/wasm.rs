@@ -58,33 +58,25 @@ pub struct Transformer(InstrumentationVisitor);
 
 #[wasm_bindgen]
 impl Transformer {
+    /// Transform the given JavaScript code with optional sourcemap support.
+    /// # Errors
+    /// Returns an error if the transformation fails to find injection points.
     #[wasm_bindgen]
-    pub fn transform(&mut self, contents: &str, is_module: ModuleType) -> Result<String, JsError> {
-        self.0
-            .transform(contents, is_module.into())
-            .map_err(|e| JsError::new(&e.to_string()))
-    }
-
-    #[wasm_bindgen(js_name = "transformWithSourcemap")]
-    pub fn transform_with_sourcemap(
+    #[allow(clippy::needless_pass_by_value)]
+    pub fn transform(
         &mut self,
-        filename: &str,
-        contents: &str,
+        contents: String,
         is_module: ModuleType,
-        input_sourcemap: &str,
+        sourcemap: Option<String>,
     ) -> Result<TransformOutput, JsError> {
         self.0
-            .transform_with_sourcemap(
-                contents,
-                is_module.into(),
-                Some(input_sourcemap),
-                Some(filename),
-            )
+            .transform(&contents, is_module.into(), sourcemap.as_deref())
             .map_err(|e| JsError::new(&e.to_string()))
     }
 }
 
 #[wasm_bindgen]
+#[must_use]
 pub fn create(
     configs: Vec<InstrumentationConfig>,
     dc_module: Option<String>,
