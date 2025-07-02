@@ -65,12 +65,12 @@ impl Transformer {
     #[allow(clippy::needless_pass_by_value)]
     pub fn transform(
         &mut self,
-        contents: String,
-        is_module: ModuleType,
+        code: String,
+        module_type: ModuleType,
         sourcemap: Option<String>,
     ) -> Result<TransformOutput, JsError> {
         self.0
-            .transform(&contents, is_module.into(), sourcemap.as_deref())
+            .transform(&code, module_type.into(), sourcemap.as_deref())
             .map_err(|e| JsError::new(&e.to_string()))
     }
 }
