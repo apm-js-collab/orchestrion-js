@@ -1,3 +1,7 @@
+## 0.5.0
+
+- fix: Allow injecting into function nested in functions (#17)
+
 ## 0.4.0
 
 - feat: Error when code injection fails (#9)
