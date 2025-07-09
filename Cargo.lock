@@ -1141,6 +1141,7 @@ dependencies = [
  "getrandom 0.2.16",
  "nodejs-semver",
  "serde",
+ "sourcemap",
  "swc",
  "swc_core",
  "swc_ecma_parser",

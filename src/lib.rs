@@ -52,6 +52,25 @@ use crate::error::OrchestrionError;
 #[cfg(feature = "wasm")]
 pub mod wasm;
 
+/// Output of a transformation operation
+#[cfg_attr(
+    feature = "serde",
+    derive(serde::Serialize, serde::Deserialize),
+    serde(rename_all = "lowercase")
+)]
+#[cfg_attr(
+    feature = "wasm",
+    derive(tsify::Tsify),
+    tsify(into_wasm_abi, from_wasm_abi)
+)]
+#[derive(Debug, Clone)]
+pub struct TransformOutput {
+    /// The transformed JavaScript code
+    pub code: String,
+    /// The sourcemap for the transformation (if generated)
+    pub map: Option<String>,
+}
+
 /// This struct is responsible for managing all instrumentations. It's created from a YAML string
 /// via the [`FromStr`] trait. See tests for examples, but by-and-large this just means you can
 /// call `.parse()` on a YAML string to get an `Instrumentor` instance, if it's valid.
@@ -141,17 +160,24 @@ impl InstrumentationVisitor {
         }
     }
 
-    /// Transform the given JavaScript code.
+    /// Transform the given JavaScript code with sourcemap support.
     /// # Errors
     /// Returns an error if the transformation fails.
     pub fn transform(
         &mut self,
         contents: &str,
         is_module: IsModule,
-    ) -> Result<String, Box<dyn Error>> {
+        sourcemap: Option<&str>,
+    ) -> Result<TransformOutput, Box<dyn Error>> {
         let compiler = Compiler::new(Arc::new(swc_core::common::SourceMap::new(
             FilePathMapping::empty(),
         )));
+
+        // Parse input sourcemap if provided
+        let sourcemap = sourcemap
+            .and_then(|input_map| sourcemap::SourceMap::from_slice(input_map.as_bytes()).ok());
+
+        let filename = sourcemap.as_ref().and_then(|map| map.get_file());
 
         #[allow(clippy::redundant_closure_for_method_calls)]
         let result = try_with_handler(
@@ -161,10 +187,14 @@ impl InstrumentationVisitor {
                 skip_filename: false,
             },
             |handler| {
-                let source_file = compiler.cm.new_source_file(
-                    Arc::new(FileName::Real(PathBuf::from("index.mjs"))),
-                    contents.to_string(),
+                let source_filename = filename.map_or_else(
+                    || Arc::new(FileName::Real(PathBuf::from("index.js"))),
+                    |f| Arc::new(FileName::Real(PathBuf::from(f))),
                 );
+
+                let source_file = compiler
+                    .cm
+                    .new_source_file(source_filename, contents.to_string());
 
                 let program = compiler
                     .parse_js(
@@ -184,18 +214,24 @@ impl InstrumentationVisitor {
                         program.visit_mut_with(self);
                         program
                     })?;
+
+                let enable_sourcemap = sourcemap.is_some();
                 let result = compiler.print(
                     &program,
                     PrintArgs {
-                        source_file_name: None,
-                        source_map: SourceMapsConfig::Bool(false),
+                        source_file_name: filename,
+                        source_map: SourceMapsConfig::Bool(enable_sourcemap),
                         comments: None,
-                        emit_source_map_columns: false,
+                        emit_source_map_columns: true,
+                        orig: sourcemap.as_ref(),
                         ..Default::default()
                     },
                 )?;
 
-                Ok(result.code)
+                Ok(TransformOutput {
+                    code: result.code,
+                    map: result.map,
+                })
             },
         )
         .map_err(|e| e.to_pretty_error())?;
