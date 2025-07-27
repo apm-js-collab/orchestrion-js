@@ -9,7 +9,7 @@ use swc_core::ecma::{
     ast::{
         ArrowExpr, AssignExpr, AssignTarget, BlockStmt, ClassDecl, ClassExpr, ClassMethod,
         Constructor, Expr, FnDecl, FnExpr, Ident, Lit, MemberProp, MethodProp, Module, ModuleItem,
-        Pat, PropName, Script, SimpleAssignTarget, Stmt, Str, VarDecl,
+        Param, Pat, PropName, Script, SimpleAssignTarget, Stmt, Str, VarDecl,
     },
     atoms::Atom,
 };
@@ -60,9 +60,9 @@ impl Instrumentation {
         self.has_injected = false;
     }
 
-    fn new_fn(&self, body: BlockStmt) -> ArrowExpr {
+    fn new_fn(&self, body: BlockStmt, params: Vec<Pat>) -> ArrowExpr {
         ArrowExpr {
-            params: vec![],
+            params,
             body: Box::new(body.into()),
             is_async: self.config.function_query.kind().is_async(),
             is_generator: false,
@@ -92,7 +92,7 @@ impl Instrumentation {
         define_channel
     }
 
-    fn insert_tracing(&mut self, body: &mut BlockStmt) {
+    fn insert_tracing(&mut self, body: &mut BlockStmt, params: &[Param]) {
         self.count += 1;
 
         let original_stmts = std::mem::take(&mut body.stmts);
@@ -104,7 +104,20 @@ impl Instrumentation {
             ..body.clone()
         };
 
-        let traced_fn = self.new_fn(original_body);
+        let original_params: Vec<Pat> = params.iter().map(|p| p.pat.clone()).collect();
+
+        let wrapped_fn = self.new_fn(original_body, original_params);
+
+        let traced_body = BlockStmt {
+            span: Span::default(),
+            ctxt: SyntaxContext::empty(),
+            stmts: vec![
+                quote!("const __apm$wrapped = $wrapped;" as Stmt, wrapped: Expr = wrapped_fn.into()),
+                quote!("return __apm$wrapped.apply(null, __apm$original_args);" as Stmt),
+            ],
+        };
+
+        let traced_fn = self.new_fn(traced_body, vec![]);
 
         let id_name = self.config.get_identifier_name();
         let ch_ident = ident!(format!("tr_ch_apm${}", &id_name));
@@ -115,6 +128,7 @@ impl Instrumentation {
         ));
 
         body.stmts = vec![
+            quote!("const __apm$original_args = arguments" as Stmt),
             quote!("const __apm$traced = $traced;" as Stmt, traced: Expr = traced_fn.into()),
             quote!(
                 "if (!$ch.hasSubscribers) return __apm$traced();" as Stmt,
@@ -185,7 +199,7 @@ impl Instrumentation {
             && func_expr.function.body.is_some()
         {
             if let Some(body) = func_expr.function.body.as_mut() {
-                self.insert_tracing(body);
+                self.insert_tracing(body, &func_expr.function.params);
             }
             true
         } else {
@@ -223,10 +237,10 @@ impl Instrumentation {
             && node.function.body.is_some()
         {
             if let Some(body) = node.function.body.as_mut() {
-                self.insert_tracing(body);
+                self.insert_tracing(body, &node.function.params);
             }
         }
-        false
+        true
     }
 
     pub fn visit_mut_var_decl(&mut self, node: &mut VarDecl) -> bool {
@@ -279,7 +293,7 @@ impl Instrumentation {
             && node.function.body.is_some()
         {
             if let Some(body) = node.function.body.as_mut() {
-                self.insert_tracing(body);
+                self.insert_tracing(body, &node.function.params);
             }
         }
         true
@@ -312,7 +326,7 @@ impl Instrumentation {
             && node.function.body.is_some()
         {
             if let Some(body) = node.function.body.as_mut() {
-                self.insert_tracing(body);
+                self.insert_tracing(body, &node.function.params);
             }
         }
         false

@@ -1,3 +1,11 @@
+## 0.6.0
+
+- fix: Allow for argumentation mutation in complex argument functions (#19)
+
+## 0.5.0
+
+- fix: Allow injecting into functions nested in functions (#17)
+
 ## 0.4.0
 
 - feat: Error when code injection fails (#9)

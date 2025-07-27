@@ -1,5 +1,7 @@
 import { create } from "../../pkg/orchestrion_js.js";
 import { describe, test, expect } from "vitest";
+import tsc from "typescript";
+import { SourceMapConsumer } from "source-map";
 
 describe('Orchestrion JS Transformer', () => {
     const instrumentor = create([
@@ -60,25 +62,50 @@ describe('Orchestrion JS Transformer', () => {
         expect(outputCjs).toMatchSnapshot();
     });
 
-    test('should transform TypeScript with source map correctly', () => {
-        const originalTypescript = `export class Up {
+    test('should transform TypeScript with source map correctly', async () => {
+        const originalTypescript = `type Url = { href: string };
+
+export class Up {
     constructor() {
         console.log('constructor');
     }
-    fetch(url) {
+    fetch(url: Url): void {
         console.log('fetch');
     }
 }`;
 
-        const originalTypescriptSourceMap = `{"version":3,"file":"typescript.js","sourceRoot":"","sources":["typescript.ts"],"names":[],"mappings":"AAAA,MAAM,OAAO,EAAE;IACd;QACC,OAAO,CAAC,GAAG,CAAC,aAAa,CAAC,CAAA;IAC3B,CAAC;IAED,KAAK,CAAC,GAAW;QAChB,OAAO,CAAC,GAAG,CAAC,OAAO,CAAC,CAAA;IACrB,CAAC;CACD"}`;
+        const { outputText: outputJavaScript, sourceMapText: originalTypescriptSourceMap } = tsc.transpileModule(originalTypescript, {
+            compilerOptions: {
+                module: tsc.ModuleKind.ESNext,
+                target: tsc.ScriptTarget.ESNext,
+                sourceMap: true,
+            }
+        });
+
+        console.log({ outputJavaScript });
 
         const outputTs = matchedTransforms.transform(
-            originalTypescript,
+            outputJavaScript,
             "esm",
             originalTypescriptSourceMap,
         );
 
         expect(outputTs).toMatchSnapshot();
+
+
+        const sourceMapConsumer = (await new SourceMapConsumer(JSON.parse(outputTs.map)));
+
+        const originalPosition = sourceMapConsumer.originalPositionFor({
+            // This is the position of the fetch function in the transformed JavaScript
+            line: 30,
+            column: 4,
+        });
+
+        // This is the position of the fetch function in the original TypeScript
+        expect(originalPosition.line).toEqual(7);
+        expect(originalPosition.column).toEqual(4);
+
+        sourceMapConsumer.destroy();
     });
 
     test('should throw error when no injection points are found', () => {
