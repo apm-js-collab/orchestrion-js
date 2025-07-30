@@ -82,8 +82,6 @@ export class Up {
             }
         });
 
-        console.log({ outputJavaScript });
-
         const outputTs = matchedTransforms.transform(
             outputJavaScript,
             "esm",
@@ -92,12 +90,11 @@ export class Up {
 
         expect(outputTs).toMatchSnapshot();
 
-
         const sourceMapConsumer = (await new SourceMapConsumer(JSON.parse(outputTs.map)));
 
         const originalPosition = sourceMapConsumer.originalPositionFor({
             // This is the position of the fetch function in the transformed JavaScript
-            line: 30,
+            line: 31,
             column: 4,
         });
 

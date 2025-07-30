@@ -8,7 +8,8 @@ const tr_ch_apm$up_constructor = tr_ch_apm_tracingChannel("orchestrion:one:up:co
 module.exports = class Up {
     constructor(){
         const tr_ch_apm_ctx$up_constructor = {
-            arguments
+            arguments,
+            module_version: "1.0.0"
         };
         try {
             if (tr_ch_apm$up_constructor.hasSubscribers) {
@@ -42,7 +43,8 @@ module.exports = class Up {
         if (!tr_ch_apm$up_fetch.hasSubscribers) return __apm$traced();
         return tr_ch_apm$up_fetch.traceSync(__apm$traced, {
             arguments,
-            self: this
+            self: this,
+            module_version: "1.0.0"
         });
     }
 };
@@ -59,7 +61,8 @@ const tr_ch_apm$up_constructor = tr_ch_apm_tracingChannel("orchestrion:one:up:co
 export class Up {
     constructor(){
         const tr_ch_apm_ctx$up_constructor = {
-            arguments
+            arguments,
+            module_version: "1.0.0"
         };
         try {
             if (tr_ch_apm$up_constructor.hasSubscribers) {
@@ -93,7 +96,8 @@ export class Up {
         if (!tr_ch_apm$up_fetch.hasSubscribers) return __apm$traced();
         return tr_ch_apm$up_fetch.traceSync(__apm$traced, {
             arguments,
-            self: this
+            self: this,
+            module_version: "1.0.0"
         });
     }
 }
@@ -110,7 +114,8 @@ const tr_ch_apm$up_constructor = tr_ch_apm_tracingChannel("orchestrion:one:up:co
 export class Up {
     constructor(){
         const tr_ch_apm_ctx$up_constructor = {
-            arguments
+            arguments,
+            module_version: "1.0.0"
         };
         try {
             if (tr_ch_apm$up_constructor.hasSubscribers) {
@@ -144,11 +149,12 @@ export class Up {
         if (!tr_ch_apm$up_fetch.hasSubscribers) return __apm$traced();
         return tr_ch_apm$up_fetch.traceSync(__apm$traced, {
             arguments,
-            self: this
+            self: this,
+            module_version: "1.0.0"
         });
     }
 }
 ",
-  "map": "{"version":3,"file":"module.js","sources":["module.ts"],"sourceRoot":"","names":[],"mappings":";;;AAEA,MAAM,CAAA,MAAO,EAAE;IACX,aAAA;;;;;;;;YACI,OAAO,CAAC,GAAG,CAAC,aAAa,CAAC,CAAC;;;;;;;;;;;;;;;;IAC/B,CAAC;IACD,KAAK,IAAS,EAAA;;;mCAAR;gBACF,OAAO,CAAC,GAAG,CAAC,OAAO,CAAC,CAAC;;;;;;;;;IACzB,CAAC;CACJ"}",
+  "map": "{"version":3,"file":"module.js","sources":["module.ts"],"sourceRoot":"","names":[],"mappings":";;;AAEA,MAAM,CAAA,MAAO,EAAE;IACX,aAAA;;;;;;;;;YACI,OAAO,CAAC,GAAG,CAAC,aAAa,CAAC,CAAC;;;;;;;;;;;;;;;;IAC/B,CAAC;IACD,KAAK,IAAS,EAAA;;;mCAAR;gBACF,OAAO,CAAC,GAAG,CAAC,OAAO,CAAC,CAAC;;;;;;;;;;IACzB,CAAC;CACJ"}",
 }
 `;

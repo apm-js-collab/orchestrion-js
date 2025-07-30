@@ -33,6 +33,7 @@ pub struct Instrumentation {
     count: usize,
     is_correct_class: bool,
     has_injected: bool,
+    module_version: Option<String>,
 }
 
 impl Instrumentation {
@@ -43,7 +44,12 @@ impl Instrumentation {
             count: 0,
             is_correct_class: false,
             has_injected: false,
+            module_version: None,
         }
+    }
+
+    pub fn set_module_version(&mut self, version: &str) {
+        self.module_version = Some(version.to_string());
     }
 
     #[must_use]
@@ -134,10 +140,18 @@ impl Instrumentation {
                 "if (!$ch.hasSubscribers) return __apm$traced();" as Stmt,
                 ch = ch_ident
             ),
-            quote!(
-                "return $trace(__apm$traced, { arguments, self: this } );" as Stmt,
-                trace = trace_ident
-            ),
+            match &self.module_version {
+                Some(version) => quote!(
+                    "return $trace(__apm$traced, { arguments, self: this, module_version: $version } );"
+                        as Stmt,
+                    trace = trace_ident,
+                    version: Expr = version.as_str().into(),
+                ),
+                None => quote!(
+                    "return $trace(__apm$traced, { arguments, self: this } );" as Stmt,
+                    trace = trace_ident,
+                ),
+            },
         ];
 
         self.has_injected = true;
@@ -184,7 +198,15 @@ impl Instrumentation {
         }
 
         body.stmts = vec![
-            quote!("const $ctx = { arguments };" as Stmt, ctx = ctx_ident,),
+            match &self.module_version {
+                Some(version) => {
+                    quote!("const $ctx = { arguments, module_version: $version };" as Stmt,
+                        ctx = ctx_ident,
+                        version: Expr = version.as_str().into()
+                    )
+                }
+                None => quote!("const $ctx = { arguments };" as Stmt, ctx = ctx_ident,),
+            },
             try_catch,
         ];
 
