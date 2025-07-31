@@ -83,6 +83,7 @@ pub struct Instrumentor {
 }
 
 impl Instrumentor {
+    #[must_use]
     pub fn new(config: Config) -> Self {
         Self {
             instrumentations: config
@@ -106,7 +107,12 @@ impl Instrumentor {
         let instrumentations = self
             .instrumentations
             .iter()
-            .filter(|instr| instr.matches(module_name, version, file_path));
+            .filter(|instr| instr.matches(module_name, version, file_path))
+            .cloned()
+            .map(|mut i| {
+                i.set_module_version(version);
+                i
+            });
 
         InstrumentationVisitor::new(instrumentations, &self.dc_module)
     }
@@ -119,12 +125,12 @@ pub struct InstrumentationVisitor {
 }
 
 impl InstrumentationVisitor {
-    fn new<'b, I>(instrumentations: I, dc_module: &str) -> Self
+    fn new<I>(instrumentations: I, dc_module: &str) -> Self
     where
-        I: Iterator<Item = &'b Instrumentation>,
+        I: Iterator<Item = Instrumentation>,
     {
         Self {
-            instrumentations: instrumentations.cloned().collect(),
+            instrumentations: instrumentations.collect(),
             dc_module: dc_module.to_string(),
         }
     }
