@@ -28,6 +28,7 @@ jobs:
         run: cargo fmt --all -- --check
       - name: Build and Test wasm
         run: npm install && npm run build && npm test
+      # This check is currently failing even after updating the license file.
       # - name: Install license tool
       #   run: cargo install dd-rust-license-tool
       # - name: Run license tool
