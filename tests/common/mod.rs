@@ -22,18 +22,18 @@ pub fn transpile_and_test(test_file: &str, mjs: bool, config: Config) {
         instrumentor.get_matching_instrumentations(TEST_MODULE_NAME, "0.0.1", &file_path);
 
     let extension = if mjs { "mjs" } else { "js" };
-    let instrumentable = test_dir.join(format!("mod.{}", extension));
+    let instrumentable = test_dir.join(format!("mod.{extension}"));
     let mut file = std::fs::File::open(&instrumentable).unwrap();
     let mut contents = String::new();
     file.read_to_string(&mut contents).unwrap();
 
     if let Ok(result) = instrumentations.transform(&contents, IsModule::Bool(mjs), None) {
-        let instrumented_file = test_dir.join(format!("instrumented.{}", extension));
+        let instrumented_file = test_dir.join(format!("instrumented.{extension}"));
         let mut file = std::fs::File::create(&instrumented_file).unwrap();
         file.write_all(result.code.as_bytes()).unwrap();
     }
 
-    let test_file = format!("test.{}", extension);
+    let test_file = format!("test.{extension}");
     Command::new("node")
         .current_dir(test_dir)
         .stdout(std::process::Stdio::inherit())

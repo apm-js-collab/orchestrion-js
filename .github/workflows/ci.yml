@@ -2,7 +2,7 @@ name: CI
 on: [push, pull_request]
 env:
   CARGO_TERM_COLOR: always
-  RUST_VERSION: 1.84.1
+  RUST_VERSION: 1.87.0
 jobs:
   test:
     name: Test & Lint
@@ -28,6 +28,7 @@ jobs:
         run: cargo fmt --all -- --check
       - name: Build and Test wasm
         run: npm install && npm run build && npm test
+      # This check is currently failing even after updating the license file.
       # - name: Install license tool
       #   run: cargo install dd-rust-license-tool
       # - name: Run license tool
