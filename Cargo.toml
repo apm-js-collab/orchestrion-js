@@ -14,11 +14,10 @@ wasm = ['serde', "wasm-bindgen", "tsify", "getrandom"]
 
 [dependencies]
 nodejs-semver = { version = "4", features = ["serde"] }
-swc = "21"
-swc_core = { version = "22", features = ["ecma_plugin_transform","ecma_quote"] }
-swc_ecma_parser = "11"
+swc = "33"
+swc_core = { version = "34", features = ["ecma_plugin_transform","ecma_quote"] }
+swc_ecma_parser = "22"
 swc_ecma_visit = { version = "8", features = ["path"] }
-sourcemap = "9"
 
 # serde feature
 serde = { version = "1", features = ["derive"], optional = true }
@@ -27,7 +26,7 @@ serde = { version = "1", features = ["derive"], optional = true }
 wasm-bindgen = { version = "0.2", optional = true }
 tsify = { version='0.5', features = ["js"], optional = true}
 # we need this to enable the js feature
-getrandom = { version = "*", features = ["js"], optional = true }
+getrandom = { version = "*", features = ["wasm_js"], optional = true }
 
 [dev-dependencies]
 assert_cmd = "2"

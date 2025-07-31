@@ -21,6 +21,7 @@
 use std::{error::Error, path::PathBuf, sync::Arc};
 use swc::{
     config::{IsModule, SourceMapsConfig},
+    sourcemap::SourceMap,
     try_with_handler, Compiler, HandlerOpts, PrintArgs,
 };
 use swc_core::{
@@ -174,10 +175,12 @@ impl InstrumentationVisitor {
         )));
 
         // Parse input sourcemap if provided
-        let sourcemap = sourcemap
-            .and_then(|input_map| sourcemap::SourceMap::from_slice(input_map.as_bytes()).ok());
+        let sourcemap =
+            sourcemap.and_then(|input_map| SourceMap::from_slice(input_map.as_bytes()).ok());
 
-        let filename = sourcemap.as_ref().and_then(|map| map.get_file());
+        let filename = sourcemap
+            .as_ref()
+            .and_then(|map| map.get_file().map(ToString::to_string));
 
         #[allow(clippy::redundant_closure_for_method_calls)]
         let result = try_with_handler(
@@ -187,7 +190,7 @@ impl InstrumentationVisitor {
                 skip_filename: false,
             },
             |handler| {
-                let source_filename = filename.map_or_else(
+                let source_filename = filename.as_ref().map_or_else(
                     || Arc::new(FileName::Real(PathBuf::from("index.js"))),
                     |f| Arc::new(FileName::Real(PathBuf::from(f))),
                 );
@@ -219,11 +222,11 @@ impl InstrumentationVisitor {
                 let result = compiler.print(
                     &program,
                     PrintArgs {
-                        source_file_name: filename,
+                        source_file_name: filename.as_deref(),
                         source_map: SourceMapsConfig::Bool(enable_sourcemap),
                         comments: None,
                         emit_source_map_columns: true,
-                        orig: sourcemap.as_ref(),
+                        orig: sourcemap,
                         ..Default::default()
                     },
                 )?;
