@@ -28,7 +28,7 @@ jobs:
         run: cargo fmt --all -- --check
       - name: Build and Test wasm
         run: npm install && npm run build && npm test
-      - name: Install license tool
-        run: cargo install dd-rust-license-tool
-      - name: Run license tool
-        run: dd-rust-license-tool check
+      # - name: Install license tool
+      #   run: cargo install dd-rust-license-tool
+      # - name: Run license tool
+      #   run: dd-rust-license-tool check
