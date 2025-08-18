@@ -142,7 +142,7 @@ impl Instrumentation {
             ),
             match &self.module_version {
                 Some(version) => quote!(
-                    "return $trace(__apm$traced, { arguments, self: this, module_version: $version } );"
+                    "return $trace(__apm$traced, { arguments, self: this, moduleVersion: $version } );"
                         as Stmt,
                     trace = trace_ident,
                     version: Expr = version.as_str().into(),
@@ -200,7 +200,7 @@ impl Instrumentation {
         body.stmts = vec![
             match &self.module_version {
                 Some(version) => {
-                    quote!("const $ctx = { arguments, module_version: $version };" as Stmt,
+                    quote!("const $ctx = { arguments, moduleVersion: $version };" as Stmt,
                         ctx = ctx_ident,
                         version: Expr = version.as_str().into()
                     )
