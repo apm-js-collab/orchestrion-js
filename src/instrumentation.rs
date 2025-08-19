@@ -119,7 +119,8 @@ impl Instrumentation {
             ctxt: SyntaxContext::empty(),
             stmts: vec![
                 quote!("const __apm$wrapped = $wrapped;" as Stmt, wrapped: Expr = wrapped_fn.into()),
-                quote!("return __apm$wrapped.apply(null, __apm$original_args);" as Stmt),
+                // TODO: instead of a static `this` we should be able to declare the value
+                quote!("return __apm$wrapped.apply(this, __apm$original_args);" as Stmt),
             ],
         };
 
@@ -127,11 +128,11 @@ impl Instrumentation {
 
         let id_name = self.config.get_identifier_name();
         let ch_ident = ident!(format!("tr_ch_apm${}", &id_name));
-        let trace_ident = ident!(format!(
-            "tr_ch_apm${}.{}",
+        let trace_statement = construct_trace_statement(
+            &self.config,
             &id_name,
-            self.config.function_query.kind().tracing_operator()
-        ));
+            (&self.module_version).clone().unwrap_or(String::new())
+        );
 
         body.stmts = vec![
             quote!("const __apm$original_args = arguments" as Stmt),
@@ -140,18 +141,7 @@ impl Instrumentation {
                 "if (!$ch.hasSubscribers) return __apm$traced();" as Stmt,
                 ch = ch_ident
             ),
-            match &self.module_version {
-                Some(version) => quote!(
-                    "return $trace(__apm$traced, { arguments, self: this, moduleVersion: $version } );"
-                        as Stmt,
-                    trace = trace_ident,
-                    version: Expr = version.as_str().into(),
-                ),
-                None => quote!(
-                    "return $trace(__apm$traced, { arguments, self: this } );" as Stmt,
-                    trace = trace_ident,
-                ),
-            },
+            trace_statement
         ];
 
         self.has_injected = true;
@@ -235,7 +225,7 @@ impl Instrumentation {
     }
 
     // The rest of these functions are from `VisitMut`, except they return a boolean to indicate
-    // whether recusrsing through the tree is necessary, rather than calling
+    // whether recursing through the tree is necessary, rather than calling
     // `visit_mut_children_with`.
 
     pub fn visit_mut_module(&mut self, node: &mut Module) -> bool {
@@ -356,7 +346,7 @@ impl Instrumentation {
 
     pub fn visit_mut_assign_expr(&mut self, node: &mut AssignExpr) -> bool {
         // TODO(bengl) This is by far the hardest bit. We're trying to infer a name for this
-        // function expresion using the surrounding code, but it's not always possible, and even
+        // function expression using the surrounding code, but it's not always possible, and even
         // where it is, there are so many ways to give a function expression a "name", that the
         // code paths here can get pretty hairy. Right now this is only covering some basic cases.
         // The following cases are missing:
@@ -397,4 +387,32 @@ pub fn get_script_start_index(script: &Script) -> usize {
         }
     }
     0
+}
+
+/// Builds a tracing channel trace invocation. For example, the result may
+/// look like:
+///
+/// ```js
+/// return tr_ch_amp$myChannel.traceSync(__apm$traced, { arguments, self: this, moduleVersion: "1.0.0" })
+/// ```
+fn construct_trace_statement(config: &InstrumentationConfig, channel_name: &String, mod_version: String) -> Stmt {
+    let mut ctx = "{ arguments, self: this }".to_string();
+    if mod_version.len() > 0 {
+        ctx = ["{ arguments, self: this, moduleVersion: \"", mod_version.as_str(), "\" }"].join("");
+    }
+
+    let operator = ["tr_ch_apm$", channel_name, ".", config.function_query.kind().tracing_operator()].join("");
+    let stmt_str;
+    if config.function_query.kind().is_callback() == true {
+        // TODO: read callback position from configuration
+        // TODO: figure out how we can pass a `this` argument
+        stmt_str = ["return ", &*operator, "(__apm$traced, -1, ", ctx.as_str(), ", this, ...arguments)"].join("");
+    } else {
+        stmt_str = ["return ", &*operator, "(__apm$traced, ", ctx.as_str(), ")"].join("");
+    }
+
+    return quote!(
+        "$stmt" as Stmt,
+        stmt = Ident::new(Atom::from(stmt_str), Span::default(), SyntaxContext::empty())
+    )
 }
