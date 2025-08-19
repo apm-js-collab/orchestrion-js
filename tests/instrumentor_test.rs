@@ -5,6 +5,7 @@
 mod common;
 
 mod arguments_mutation;
+mod callback_cjs;
 mod class_expression_cjs;
 mod class_method_cjs;
 mod constructor_cjs;
