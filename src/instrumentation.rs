@@ -408,9 +408,9 @@ fn construct_trace_statement(config: &InstrumentationConfig, channel_name: &str,
     #[allow(clippy::needless_late_init)]
     let stmt_str;
     if config.function_query.kind().is_callback() == true {
-        // TODO: read callback position from configuration
         // TODO: figure out how we can pass a `this` argument
-        stmt_str = ["return ", &*operator, "(__apm$traced, -1, ", ctx.as_str(), ", this, ...arguments)"].join("");
+        let pos = config.callback_config.position.to_string();
+        stmt_str = ["return ", &*operator, "(__apm$traced, ", pos.as_str(), ", ", ctx.as_str(), ", this, ...arguments)"].join("");
     } else {
         stmt_str = ["return ", &*operator, "(__apm$traced, ", ctx.as_str(), ")"].join("");
     }

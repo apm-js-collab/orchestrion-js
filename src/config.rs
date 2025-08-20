@@ -47,6 +47,23 @@ impl ModuleMatcher {
     }
 }
 
+#[cfg_attr(feature = "wasm", derive(tsify::Tsify))]
+#[cfg_attr(
+    feature = "serde",
+    derive(serde::Serialize, serde::Deserialize),
+    serde(rename_all = "camelCase")
+)]
+#[derive(Debug, Clone)]
+/// `CallbackConfig` represents details needed when wrapping a function that
+/// accepts a callback. These details will be used to construct the
+/// `tracingChannel.traceCallback` invocation.
+pub struct CallbackConfig {
+    /// `position` is the ordinal of the callback function within the wrapped
+    /// function's parameter list. A value of `-1` indicates that the callback
+    /// is the last parameter in the list. The value is zero based.
+    pub position: i32,
+}
+
 #[cfg_attr(
     feature = "serde",
     derive(serde::Serialize, serde::Deserialize),
@@ -62,16 +79,34 @@ pub struct InstrumentationConfig {
     pub channel_name: String,
     pub module: ModuleMatcher,
     pub function_query: FunctionQuery,
+    pub callback_config: CallbackConfig,
 }
 
+#[allow(clippy::needless_return)]
 impl InstrumentationConfig {
     #[must_use]
     pub fn new(channel_name: &str, module: ModuleMatcher, function_query: FunctionQuery) -> Self {
-        Self {
+        return Self::new_with_callback_config(
+            channel_name,
+            module,
+            function_query,
+            CallbackConfig { position: -1 },
+        );
+    }
+
+    #[must_use]
+    pub fn new_with_callback_config(
+        channel_name: &str,
+        module: ModuleMatcher,
+        function_query: FunctionQuery,
+        callback_config: CallbackConfig,
+    ) -> Self {
+        return Self {
             channel_name: channel_name.to_string(),
             module,
             function_query,
-        }
+            callback_config,
+        };
     }
 
     #[must_use]
