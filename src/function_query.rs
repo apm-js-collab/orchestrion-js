@@ -25,7 +25,8 @@ impl FunctionKind {
     pub fn is_async(&self) -> bool {
         matches!(self, FunctionKind::Async)
     }
-    
+
+    #[must_use]
     pub fn is_callback(&self) -> bool {
         matches!(self, FunctionKind::Callback)
     }

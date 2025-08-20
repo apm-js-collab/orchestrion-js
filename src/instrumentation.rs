@@ -131,7 +131,7 @@ impl Instrumentation {
         let trace_statement = construct_trace_statement(
             &self.config,
             &id_name,
-            (&self.module_version).clone().unwrap_or(String::new())
+            self.module_version.clone().unwrap_or_default().as_str()
         );
 
         body.stmts = vec![
@@ -395,13 +395,16 @@ pub fn get_script_start_index(script: &Script) -> usize {
 /// ```js
 /// return tr_ch_amp$myChannel.traceSync(__apm$traced, { arguments, self: this, moduleVersion: "1.0.0" })
 /// ```
-fn construct_trace_statement(config: &InstrumentationConfig, channel_name: &String, mod_version: String) -> Stmt {
+#[allow(clippy::bool_comparison)]
+#[allow(clippy::needless_return)]
+fn construct_trace_statement(config: &InstrumentationConfig, channel_name: &str, mod_version: &str) -> Stmt {
     let mut ctx = "{ arguments, self: this }".to_string();
-    if mod_version.len() > 0 {
-        ctx = ["{ arguments, self: this, moduleVersion: \"", mod_version.as_str(), "\" }"].join("");
+    if mod_version.is_ascii() == false {
+        ctx = ["{ arguments, self: this, moduleVersion: \"", mod_version, "\" }"].join("");
     }
 
     let operator = ["tr_ch_apm$", channel_name, ".", config.function_query.kind().tracing_operator()].join("");
+    #[allow(clippy::needless_late_init)]
     let stmt_str;
     if config.function_query.kind().is_callback() == true {
         // TODO: read callback position from configuration
