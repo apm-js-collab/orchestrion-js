@@ -6,7 +6,7 @@ fn callback_cjs() {
     transpile_and_test_with_imports(
         file!(),
         false,
-        Config::new_single(InstrumentationConfig::new(
+        Config::new_single(InstrumentationConfig::new_with_callback_config(
             "foo_ch",
             ModuleMatcher::new("foo", ">=1.0.0", "index.js").unwrap(),
             FunctionQuery::FunctionExpression {
@@ -14,6 +14,7 @@ fn callback_cjs() {
                 kind: FunctionKind::Callback,
                 index: 0,
             },
+            CallbackConfig { position: 1 },
         )),
         &[PackageImport {
             module_name: "foo".to_string(),
