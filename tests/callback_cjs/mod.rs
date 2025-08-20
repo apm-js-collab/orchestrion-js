@@ -12,13 +12,13 @@ fn callback_cjs() {
             FunctionQuery::FunctionExpression {
                 expression_name: "doWork".to_string(),
                 kind: FunctionKind::Callback,
-                index: 0
-            }
+                index: 0,
+            },
         )),
         &[PackageImport {
             module_name: "foo".to_string(),
             module_version: "1.1.1".to_string(),
-            file: "index.js".to_string()
+            file: "index.js".to_string(),
         }],
     )
 }
