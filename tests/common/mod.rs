@@ -23,13 +23,14 @@ static TEST_MODULE_PATH: &str = "index.mjs";
 pub struct PackageImport {
     pub module_name: String,
     pub module_version: String,
-    pub file: String
+    pub file: String,
 }
 
 pub fn transpile_and_test(test_file: &str, mjs: bool, config: Config) {
     transpile_and_test_with_imports(test_file, mjs, config, &[]);
 }
 
+#[rustfmt::skip]
 pub fn transpile_and_test_with_imports(test_file: &str, mjs: bool, config: Config, imports: &[PackageImport]) {
     let test_file = PathBuf::from(test_file);
     let test_dir = test_file.parent().expect("Couldn't find test directory");

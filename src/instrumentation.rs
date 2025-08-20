@@ -131,7 +131,7 @@ impl Instrumentation {
         let trace_statement = construct_trace_statement(
             &self.config,
             &id_name,
-            self.module_version.clone().unwrap_or_default().as_str()
+            self.module_version.clone().unwrap_or_default().as_str(),
         );
 
         body.stmts = vec![
@@ -141,7 +141,7 @@ impl Instrumentation {
                 "if (!$ch.hasSubscribers) return __apm$traced();" as Stmt,
                 ch = ch_ident
             ),
-            trace_statement
+            trace_statement,
         ];
 
         self.has_injected = true;
@@ -397,6 +397,7 @@ pub fn get_script_start_index(script: &Script) -> usize {
 /// ```
 #[allow(clippy::bool_comparison)]
 #[allow(clippy::needless_return)]
+#[rustfmt::skip]
 fn construct_trace_statement(config: &InstrumentationConfig, channel_name: &str, mod_version: &str) -> Stmt {
     let mut ctx = "{ arguments, self: this }".to_string();
     if mod_version.is_ascii() == false {
