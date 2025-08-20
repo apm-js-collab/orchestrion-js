@@ -400,7 +400,7 @@ pub fn get_script_start_index(script: &Script) -> usize {
 #[rustfmt::skip]
 fn construct_trace_statement(config: &InstrumentationConfig, channel_name: &str, mod_version: &str) -> Stmt {
     let mut ctx = "{ arguments, self: this }".to_string();
-    if mod_version.is_ascii() == false {
+    if mod_version.is_empty() == false {
         ctx = ["{ arguments, self: this, moduleVersion: \"", mod_version, "\" }"].join("");
     }
 
