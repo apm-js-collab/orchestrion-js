@@ -395,8 +395,6 @@ pub fn get_script_start_index(script: &Script) -> usize {
 /// ```js
 /// return tr_ch_amp$myChannel.traceSync(__apm$traced, { arguments, self: this, moduleVersion: "1.0.0" })
 /// ```
-#[allow(clippy::bool_comparison)]
-#[allow(clippy::needless_return)]
 #[rustfmt::skip]
 fn construct_trace_statement(config: &InstrumentationConfig, channel_name: &str, mod_version: &str) -> Stmt {
     let mut ctx = "{ arguments, self: this }".to_string();

@@ -13,6 +13,8 @@
 #![deny(clippy::complexity)]
 #![deny(clippy::correctness)]
 #![deny(clippy::unwrap_used)]
+#![allow(clippy::bool_comparison)]
+#![allow(clippy::needless_return)]
 
 /**
  * Unless explicitly stated otherwise all files in this repository are licensed under the Apache-2.0 License.

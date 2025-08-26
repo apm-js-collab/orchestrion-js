@@ -79,10 +79,11 @@ pub struct InstrumentationConfig {
     pub channel_name: String,
     pub module: ModuleMatcher,
     pub function_query: FunctionQuery,
+    #[tsify(optional)]
+    #[serde(default = "InstrumentationConfig::empty_callback_config")]
     pub callback_config: CallbackConfig,
 }
 
-#[allow(clippy::needless_return)]
 impl InstrumentationConfig {
     #[must_use]
     pub fn new(channel_name: &str, module: ModuleMatcher, function_query: FunctionQuery) -> Self {
@@ -148,5 +149,10 @@ impl InstrumentationConfig {
     #[must_use]
     pub fn matches(&self, module_name: &str, version: &str, file_path: &PathBuf) -> bool {
         self.module.matches(module_name, version, file_path)
+    }
+
+    #[must_use]
+    pub fn empty_callback_config() -> CallbackConfig {
+        return CallbackConfig{ position: -1 }
     }
 }

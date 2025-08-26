@@ -27,6 +27,7 @@ wasm-bindgen = { version = "0.2", optional = true }
 tsify = { version='0.5', features = ["js"], optional = true}
 # we need this to enable the js feature
 getrandom = { version = "*", features = ["wasm_js"], optional = true }
+log = "0.4.27"
 
 [dev-dependencies]
 assert_cmd = "2"
