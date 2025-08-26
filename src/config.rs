@@ -153,6 +153,6 @@ impl InstrumentationConfig {
 
     #[must_use]
     pub fn empty_callback_config() -> CallbackConfig {
-        return CallbackConfig { position: -1 }
+        return CallbackConfig { position: -1 };
     }
 }
