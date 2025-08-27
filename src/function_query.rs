@@ -17,6 +17,7 @@ pub(crate) enum FunctionType {
 pub enum FunctionKind {
     Sync,
     Async,
+    Callback,
 }
 
 impl FunctionKind {
@@ -26,10 +27,16 @@ impl FunctionKind {
     }
 
     #[must_use]
+    pub fn is_callback(&self) -> bool {
+        matches!(self, FunctionKind::Callback)
+    }
+
+    #[must_use]
     pub fn tracing_operator(&self) -> &'static str {
         match self {
             FunctionKind::Sync => "traceSync",
             FunctionKind::Async => "tracePromise",
+            FunctionKind::Callback => "traceCallback",
         }
     }
 }
@@ -43,7 +50,7 @@ impl FunctionKind {
 #[derive(Debug, Clone)]
 pub enum FunctionQuery {
     // The order here matters because this enum is untagged, serde will try
-    // choose the first variant that matches the data.
+    // to choose the first variant that matches the data.
     ClassMethod {
         class_name: String,
         method_name: String,
