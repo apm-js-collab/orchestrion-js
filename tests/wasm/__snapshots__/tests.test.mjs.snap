@@ -33,12 +33,11 @@ module.exports = class Up {
         }
     }
     fetch() {
-        const __apm$original_args = arguments;
-        const __apm$traced = ()=>{
+        const __apm$traced = (...wrappedArgs)=>{
             const __apm$wrapped = ()=>{
                 console.log('fetch');
             };
-            return __apm$wrapped.apply(null, __apm$original_args);
+            return __apm$wrapped.apply(null, wrappedArgs);
         };
         if (!tr_ch_apm$up_fetch.hasSubscribers) return __apm$traced();
         return tr_ch_apm$up_fetch.traceSync(__apm$traced, {
@@ -86,12 +85,11 @@ export class Up {
         }
     }
     fetch() {
-        const __apm$original_args = arguments;
-        const __apm$traced = ()=>{
+        const __apm$traced = (...wrappedArgs)=>{
             const __apm$wrapped = ()=>{
                 console.log('fetch');
             };
-            return __apm$wrapped.apply(null, __apm$original_args);
+            return __apm$wrapped.apply(null, wrappedArgs);
         };
         if (!tr_ch_apm$up_fetch.hasSubscribers) return __apm$traced();
         return tr_ch_apm$up_fetch.traceSync(__apm$traced, {
@@ -139,12 +137,11 @@ export class Up {
         }
     }
     fetch(url) {
-        const __apm$original_args = arguments;
-        const __apm$traced = ()=>{
+        const __apm$traced = (...wrappedArgs)=>{
             const __apm$wrapped = (url)=>{
                 console.log('fetch');
             };
-            return __apm$wrapped.apply(null, __apm$original_args);
+            return __apm$wrapped.apply(null, wrappedArgs);
         };
         if (!tr_ch_apm$up_fetch.hasSubscribers) return __apm$traced();
         return tr_ch_apm$up_fetch.traceSync(__apm$traced, {
@@ -155,6 +152,6 @@ export class Up {
     }
 }
 ",
-  "map": "{"version":3,"file":"module.js","sources":["module.ts"],"sourceRoot":"","names":[],"mappings":";;;AAEA,MAAM,CAAA,MAAO,EAAE;IACX,aAAA;;;;;;;;;YACI,OAAO,CAAC,GAAG,CAAC,aAAa,CAAC,CAAC;;;;;;;;;;;;;;;;IAC/B,CAAC;IACD,KAAK,IAAS,EAAA;;;mCAAR;gBACF,OAAO,CAAC,GAAG,CAAC,OAAO,CAAC,CAAC;;;;;;;;;;IACzB,CAAC;CACJ"}",
+  "map": "{"version":3,"file":"module.js","sources":["module.ts"],"sourceRoot":"","names":[],"mappings":";;;AAEA,MAAM,CAAA,MAAO,EAAE;IACX,aAAA;;;;;;;;;YACI,OAAO,CAAC,GAAG,CAAC,aAAa,CAAC,CAAC;;;;;;;;;;;;;;;;IAC/B,CAAC;IACD,KAAK,CAAC,GAAQ,EAAA;;;gBACV,OAAO,CAAC,GAAG,CAAC,OAAO,CAAC,CAAC;;;;;;;;;;IACzB,CAAC;CACJ"}",
 }
 `;
