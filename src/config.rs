@@ -15,6 +15,7 @@ use std::path::PathBuf;
 #[derive(Debug, Clone)]
 pub struct ModuleMatcher {
     pub name: String,
+    #[tsify(type = "string")]
     pub version_range: Range,
     pub file_path: PathBuf,
 }
