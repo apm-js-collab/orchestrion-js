@@ -4,12 +4,12 @@
  **/
 use crate::config::InstrumentationConfig;
 use std::path::PathBuf;
-use swc_core::common::{Span, SyntaxContext};
+use swc_core::common::{Span, SyntaxContext, DUMMY_SP};
 use swc_core::ecma::{
     ast::{
-        ArrowExpr, AssignExpr, AssignTarget, BlockStmt, ClassDecl, ClassExpr, ClassMethod,
-        Constructor, Expr, FnDecl, FnExpr, Ident, Lit, MemberProp, MethodProp, Module, ModuleItem,
-        Param, Pat, PropName, Script, SimpleAssignTarget, Stmt, Str, VarDecl,
+        ArrowExpr, AssignExpr, AssignTarget, BindingIdent, BlockStmt, ClassDecl, ClassExpr, ClassMethod,
+        Constructor, Expr, FnDecl, FnExpr, Ident, IdentName, Lit, MemberProp, MethodProp, Module, ModuleItem,
+        Param, Pat, PropName, RestPat, Script, SimpleAssignTarget, Stmt, Str, VarDecl,
     },
     atoms::Atom,
 };
@@ -67,8 +67,21 @@ impl Instrumentation {
     }
 
     fn new_fn(&self, body: BlockStmt, params: Vec<Pat>) -> ArrowExpr {
+        let rest_param = Pat::Rest(RestPat {
+            span: DUMMY_SP,
+            dot3_token: DUMMY_SP,
+            arg: Box::new(
+                Pat::Ident(
+                    BindingIdent::from(
+                        IdentName::new(Atom::from("wrappedArgs"), DUMMY_SP)
+                    )
+                )
+            ),
+            type_ann: None,
+        });
+
         ArrowExpr {
-            params,
+            params: vec![rest_param],
             body: Box::new(body.into()),
             is_async: self.config.function_query.kind().is_async(),
             is_generator: false,
@@ -119,7 +132,7 @@ impl Instrumentation {
             ctxt: SyntaxContext::empty(),
             stmts: vec![
                 quote!("const __apm$wrapped = $wrapped;" as Stmt, wrapped: Expr = wrapped_fn.into()),
-                quote!("return __apm$wrapped.apply(null, __apm$original_args);" as Stmt),
+                quote!("return __apm$wrapped.apply(null, wrappedArgs);" as Stmt),
             ],
         };
 
@@ -134,7 +147,6 @@ impl Instrumentation {
         ));
 
         body.stmts = vec![
-            quote!("const __apm$original_args = arguments" as Stmt),
             quote!("const __apm$traced = $traced;" as Stmt, traced: Expr = traced_fn.into()),
             quote!(
                 "if (!$ch.hasSubscribers) return __apm$traced();" as Stmt,
