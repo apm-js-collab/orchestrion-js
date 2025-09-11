@@ -1,11 +1,17 @@
 name: CI
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    # Run for all pull requests, regardless of target branch
+
 env:
   CARGO_TERM_COLOR: always
   RUST_VERSION: 1.87.0
 jobs:
   test:
-    name: Test & Lint
+    name: Build, Lint & Test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
