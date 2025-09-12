@@ -1,8 +1,4 @@
-## 0.7.0
-
-- feat: Sourcemap support (#16)
-- feat: Update all dependencies (#24)
-- feat: Include module version in event args (#23)
+# Changelog
 
 ## [0.7.2](https://github.com/apm-js-collab/orchestrion-js/compare/code-transformer-v0.7.1...code-transformer-v0.7.2) (2025-09-12)
 
@@ -13,6 +9,15 @@
 
 ## [0.7.1](https://github.com/apm-js-collab/orchestrion-js/compare/code-transformer-v0.7.0...code-transformer-v0.7.1) (2025-09-11)
 
+### Bug Fixes
+
+* `versionRange` TypeScript definition ([#35](https://github.com/apm-js-collab/orchestrion-js/issues/35)) ([89cff5a](https://github.com/apm-js-collab/orchestrion-js/commit/89cff5a80bc1149c0bf0b930bf785c75b1d6ac2f))
+
+## 0.7.0
+
+- feat: Sourcemap support (#16)
+- feat: Update all dependencies (#24)
+- feat: Include module version in event args (#23)
 
 ### Bug Fixes
 
