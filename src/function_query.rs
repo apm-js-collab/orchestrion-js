@@ -11,6 +11,7 @@ pub(crate) enum FunctionType {
     Method,
 }
 
+/// The kind of function - Sync or returns a promise
 #[cfg_attr(feature = "wasm", derive(tsify::Tsify))]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(Debug, Clone)]
@@ -40,6 +41,7 @@ impl FunctionKind {
     derive(serde::Serialize, serde::Deserialize),
     serde(untagged, rename_all_fields = "camelCase")
 )]
+/// Describes which function to instrument
 #[derive(Debug, Clone)]
 pub enum FunctionQuery {
     // The order here matters because this enum is untagged, serde will try

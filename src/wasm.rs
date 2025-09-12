@@ -13,6 +13,7 @@ use wasm_bindgen::prelude::*;
     derive(tsify::Tsify),
     tsify(into_wasm_abi, from_wasm_abi)
 )]
+/// The type of module being passed - ESM, CJS or unknown
 pub enum ModuleType {
     ESM,
     CJS,
@@ -30,11 +31,14 @@ impl From<ModuleType> for IsModule {
 }
 
 #[wasm_bindgen]
+/// The InstrumentationMatcher is responsible for matching specific modules
 pub struct InstrumentationMatcher(Instrumentor);
 
 #[wasm_bindgen]
 impl InstrumentationMatcher {
     #[wasm_bindgen(js_name = "getTransformer")]
+    /// Get a transformer for the given module name, version and file path.
+    /// Returns `undefined` if no matching instrumentations are found.
     pub fn get_transformer(
         &mut self,
         module_name: &str,
@@ -54,11 +58,13 @@ impl InstrumentationMatcher {
 }
 
 #[wasm_bindgen]
+/// The Transformer is responsible for transforming JavaScript code.
 pub struct Transformer(InstrumentationVisitor);
 
 #[wasm_bindgen]
 impl Transformer {
-    /// Transform the given JavaScript code with optional sourcemap support.
+    /// Transform JavaScript code and optionally sourcemap.
+    ///
     /// # Errors
     /// Returns an error if the transformation fails to find injection points.
     #[wasm_bindgen]
@@ -75,6 +81,7 @@ impl Transformer {
     }
 }
 
+/// Create a new instrumentation matcher from an array of instrumentation configs.
 #[wasm_bindgen]
 #[must_use]
 pub fn create(

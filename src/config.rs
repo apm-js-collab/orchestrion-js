@@ -13,10 +13,14 @@ use std::path::PathBuf;
     serde(rename_all = "camelCase")
 )]
 #[derive(Debug, Clone)]
+/// Describes the module and file path you would like to match
 pub struct ModuleMatcher {
+    /// The name of the module you want to match
     pub name: String,
+    /// The semver range that you want to match
     #[tsify(type = "string")]
     pub version_range: Range,
+    /// The path of the file you want to match from the module root
     pub file_path: PathBuf,
 }
 
@@ -59,9 +63,13 @@ impl ModuleMatcher {
     tsify(into_wasm_abi, from_wasm_abi)
 )]
 #[derive(Debug, Clone)]
+/// Configuration for injecting instrumentation code
 pub struct InstrumentationConfig {
+    /// The name of the diagnostics channel to publish to
     pub channel_name: String,
+    /// The module matcher to identify the module and file to instrument
     pub module: ModuleMatcher,
+    /// The function query to identify the function to instrument
     pub function_query: FunctionQuery,
 }
 
