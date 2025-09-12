@@ -5,6 +5,10 @@ on:
     branches:
       - main
 
+env:
+  CARGO_TERM_COLOR: always
+  RUST_VERSION: 1.87.0
+
 permissions:
   id-token: write  # Required for OIDC
   contents: write
@@ -30,9 +34,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Install Rust ${{ env.RUST_VERSION }}
+        run: rustup toolchain install ${{ env.RUST_VERSION }} --component clippy --component rustfmt && rustup default ${{ env.RUST_VERSION }}
+      - name: Cache
+        uses: Swatinem/rust-cache@v2
       - uses: actions/setup-node@v4
         with:
-          node-version: lts/*
-          registry-url: 'https://registry.npmjs.org'
+          node-version-file: 'package.json'
       - run: npm install -g npm@latest
+      - run: npm install && npm run build
       - run: npm publish --access public
