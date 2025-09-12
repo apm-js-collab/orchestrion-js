@@ -4,6 +4,13 @@
 - feat: Update all dependencies (#24)
 - feat: Include module version in event args (#23)
 
+## [0.7.2](https://github.com/apm-js-collab/orchestrion-js/compare/code-transformer-v0.7.1...code-transformer-v0.7.2) (2025-09-12)
+
+
+### Bug Fixes
+
+* Ensure build before publish ([#41](https://github.com/apm-js-collab/orchestrion-js/issues/41)) ([e196dcf](https://github.com/apm-js-collab/orchestrion-js/commit/e196dcf02ba0eac36811180f271db7ef1dc789db))
+
 ## [0.7.1](https://github.com/apm-js-collab/orchestrion-js/compare/code-transformer-v0.7.0...code-transformer-v0.7.1) (2025-09-11)
 
 
