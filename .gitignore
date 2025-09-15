@@ -5,3 +5,5 @@ tests/*/instrumented.*
 pkg/
 node_modules/
 package-lock.json
+index.js
+index.d.ts

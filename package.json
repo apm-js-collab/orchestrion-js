@@ -10,17 +10,21 @@
     "./pkg/orchestrion_js_bg.wasm",
     "./pkg/orchestrion_js.js",
     "./pkg/orchestrion_js.d.ts",
+    "./index.js",
+    "./index.d.ts",
     "LICENSE",
     "NOTICE"
   ],
-  "main": "./pkg/orchestrion_js.js",
-  "types": "./pkg/orchestrion_js.d.ts",
+  "main": "./index.js",
+  "types": "./index.d.ts",
   "scripts": {
-    "build": "wasm-pack build --target nodejs --release -- --features wasm",
+    "build": "wasm-pack build --target nodejs --release -- --features wasm && yarn build:wrapper",
+    "build:wrapper": "tsc index.ts --declaration --module commonjs",
     "test": "vitest run",
     "test:watch": "vitest"
   },
   "devDependencies": {
+    "@types/node": "^18.0.0",
     "source-map": "^0.7.6",
     "typescript": "^5.8.3",
     "vitest": "^3.2.4",
