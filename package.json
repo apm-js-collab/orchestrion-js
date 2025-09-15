@@ -7,7 +7,6 @@
     "url": "https://github.com/apm-js-collab/orchestrion-js.git"
   },
   "files": [
-    "./pkg/orchestrion_js_bg.wasm",
     "./pkg/orchestrion_js.js",
     "./pkg/orchestrion_js.d.ts",
     "LICENSE",
@@ -17,6 +16,7 @@
   "types": "./pkg/orchestrion_js.d.ts",
   "scripts": {
     "build": "wasm-pack build --target nodejs --release -- --features wasm",
+    "postbuild": "node inline-binary.js",
     "test": "vitest run",
     "test:watch": "vitest"
   },
