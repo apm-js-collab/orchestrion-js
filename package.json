@@ -7,7 +7,6 @@
     "url": "https://github.com/apm-js-collab/orchestrion-js.git"
   },
   "files": [
-    "./pkg/orchestrion_js_bg.wasm",
     "./pkg/orchestrion_js.js",
     "./pkg/orchestrion_js.d.ts",
     "./index.js",
@@ -18,8 +17,9 @@
   "main": "./index.js",
   "types": "./index.d.ts",
   "scripts": {
-    "build": "wasm-pack build --target nodejs --release -- --features wasm && yarn build:wrapper",
+    "build": "wasm-pack build --target nodejs --release -- --features wasm && yarn build:wrapper && yarn build:inline-binary",
     "build:wrapper": "tsc index.ts --declaration --module commonjs",
+    "build:inline-binary": "node inline-binary.js",
     "test": "vitest run",
     "test:watch": "vitest"
   },
