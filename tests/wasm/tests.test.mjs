@@ -1,4 +1,4 @@
-import { create } from "../../pkg/orchestrion_js.js";
+import { create } from "../../index.js";
 import { describe, test, expect } from "vitest";
 import tsc from "typescript";
 import { SourceMapConsumer } from "source-map";
