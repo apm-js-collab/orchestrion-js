@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.8.0](https://github.com/apm-js-collab/orchestrion-js/compare/code-transformer-v0.7.2...code-transformer-v0.8.0) (2025-09-19)
+
+
+### Features
+
+* Inline wasm binary ([#46](https://github.com/apm-js-collab/orchestrion-js/issues/46)) ([9da6297](https://github.com/apm-js-collab/orchestrion-js/commit/9da6297762dbb7dc46e11a9d62fa8b1b462ba17d))
+* Load wasm lazily ([#45](https://github.com/apm-js-collab/orchestrion-js/issues/45)) ([399e942](https://github.com/apm-js-collab/orchestrion-js/commit/399e942fae21d9f16125eba20113c81940d191ff))
+
 ## [0.7.2](https://github.com/apm-js-collab/orchestrion-js/compare/code-transformer-v0.7.1...code-transformer-v0.7.2) (2025-09-12)
 
 
