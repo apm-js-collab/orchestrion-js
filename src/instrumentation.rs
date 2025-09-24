@@ -66,19 +66,6 @@ impl Instrumentation {
         self.has_injected = false;
     }
 
-    fn new_fn(&self, body: BlockStmt, params: Vec<Pat>) -> ArrowExpr {
-        ArrowExpr {
-            params,
-            body: Box::new(body.into()),
-            is_async: self.config.function_query.kind().is_async(),
-            is_generator: false,
-            type_params: None,
-            return_type: None,
-            span: Span::default(),
-            ctxt: SyntaxContext::empty(),
-        }
-    }
-
     fn create_tracing_channel(&self) -> Stmt {
         let ch_str = ident!(format!("tr_ch_apm${}", self.config.get_identifier_name()));
         let channel_string = Expr::Lit(Lit::Str(Str {
@@ -112,7 +99,7 @@ impl Instrumentation {
 
         let original_params: Vec<Pat> = params.iter().map(|p| p.pat.clone()).collect();
 
-        let wrapped_fn = self.new_fn(original_body, original_params);
+        let wrapped_fn = new_fn(original_body, original_params);
 
         let traced_body = BlockStmt {
             span: Span::default(),
@@ -123,7 +110,7 @@ impl Instrumentation {
             ],
         };
 
-        let traced_fn = self.new_fn(traced_body, vec![]);
+        let traced_fn = new_fn(traced_body, vec![]);
 
         let id_name = self.config.get_identifier_name();
         let ch_ident = ident!(format!("tr_ch_apm${}", &id_name));
@@ -397,4 +384,22 @@ pub fn get_script_start_index(script: &Script) -> usize {
         }
     }
     0
+}
+
+#[must_use]
+pub fn new_fn(body: BlockStmt, params: Vec<Pat>) -> ArrowExpr {
+    ArrowExpr {
+        params,
+        body: Box::new(body.into()),
+        // if we set this to `true` and it's an async function,
+        // it will wrap the original promise in a new native one
+        // which may not be semantically correct in cases where custom
+        // promises are returned
+        is_async: false,
+        is_generator: false,
+        type_params: None,
+        return_type: None,
+        span: Span::default(),
+        ctxt: SyntaxContext::empty(),
+    }
 }
