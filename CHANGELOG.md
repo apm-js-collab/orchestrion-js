@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.8.1](https://github.com/apm-js-collab/orchestrion-js/compare/code-transformer-v0.8.0...code-transformer-v0.8.1) (2025-09-24)
+
+
+### Bug Fixes
+
+* Hardcode wrapped arrow functions to not specify `async` key to avoid wrapping non-native promises ([#48](https://github.com/apm-js-collab/orchestrion-js/issues/48)) ([8b43c92](https://github.com/apm-js-collab/orchestrion-js/commit/8b43c9260efeb5602185b80b6ff827790fa1ee43))
+
 ## [0.8.0](https://github.com/apm-js-collab/orchestrion-js/compare/code-transformer-v0.7.2...code-transformer-v0.8.0) (2025-09-19)
 
 
