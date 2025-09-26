@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.8.2](https://github.com/apm-js-collab/orchestrion-js/compare/code-transformer-v0.8.1...code-transformer-v0.8.2) (2025-09-26)
+
+
+### Bug Fixes
+
+* Properly assign `async` keyword only to wrapped functions that had `async` keyword on original ([#50](https://github.com/apm-js-collab/orchestrion-js/issues/50)) ([0495589](https://github.com/apm-js-collab/orchestrion-js/commit/04955898ee1ce3a280f0d029e1fb605b198a3217))
+
 ## [0.8.1](https://github.com/apm-js-collab/orchestrion-js/compare/code-transformer-v0.8.0...code-transformer-v0.8.1) (2025-09-24)
 
 
