@@ -3,7 +3,7 @@
  * This product includes software developed at Datadog (<https://www.datadoghq.com>/). Copyright 2025 Datadog, Inc.
  **/
 use crate::config::InstrumentationConfig;
-use std::path::PathBuf;
+use std::path::Path;
 use swc_core::common::{Span, SyntaxContext};
 use swc_core::ecma::{
     ast::{
@@ -157,7 +157,7 @@ impl Instrumentation {
                 if ($ch.hasSubscribers) {
                     $ch.start.publish($ctx);
                 }
-            } catch (tr_ch_err) { 
+            } catch (tr_ch_err) {
                 if ($ch.hasSubscribers) {
                     $ctx.error = tr_ch_err;
                     try {
@@ -221,7 +221,7 @@ impl Instrumentation {
     }
 
     #[must_use]
-    pub fn matches(&self, module_name: &str, version: &str, file_path: &PathBuf) -> bool {
+    pub fn matches(&self, module_name: &str, version: &str, file_path: &Path) -> bool {
         self.config.matches(module_name, version, file_path)
     }
 

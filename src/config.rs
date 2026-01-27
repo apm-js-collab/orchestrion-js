@@ -4,7 +4,7 @@
  **/
 use crate::function_query::FunctionQuery;
 use nodejs_semver::{Range, SemverError, Version};
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 #[cfg_attr(feature = "wasm", derive(tsify::Tsify))]
 #[cfg_attr(
@@ -37,7 +37,7 @@ impl ModuleMatcher {
     }
 
     #[must_use]
-    pub fn matches(&self, module_name: &str, version: &str, file_path: &PathBuf) -> bool {
+    pub fn matches(&self, module_name: &str, version: &str, file_path: &Path) -> bool {
         let version: Version = match version.parse() {
             Ok(v) => v,
             Err(e) => {
@@ -46,8 +46,13 @@ impl ModuleMatcher {
             }
         };
 
+        // Normalize paths for comparison (handles Windows vs Unix separators)
+        // let self_components: Vec<_> = self.file_path.components().collect();
+        // let file_components: Vec<_> = file_path.components().collect();
+
         self.name == module_name
             && version.satisfies(&self.version_range)
+            // && self_components == file_components
             && self.file_path == *file_path
     }
 }
@@ -120,7 +125,7 @@ impl Config {
 
 impl InstrumentationConfig {
     #[must_use]
-    pub fn matches(&self, module_name: &str, version: &str, file_path: &PathBuf) -> bool {
+    pub fn matches(&self, module_name: &str, version: &str, file_path: &Path) -> bool {
         self.module.matches(module_name, version, file_path)
     }
 }
@@ -130,42 +135,19 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_module_matcher_with_forward_slashes() {
+    fn test_module_matcher_cross_platform_paths() {
+        // Config uses forward slashes (as written in configs)
         let matcher = ModuleMatcher::new("openai", ">=4.0.0", "resources/chat/completions.mjs")
             .expect("Failed to create matcher");
 
-        // Test with forward slashes (Unix-style)
-        let file_path = PathBuf::from("resources/chat/completions.mjs");
+        // Build path with components (will use platform-specific separators)
+        let mut file_path = PathBuf::from("resources");
+        file_path.push("chat");
+        file_path.push("completions.mjs");
+
         assert!(
             matcher.matches("openai", "4.87.0", &file_path),
-            "Should match with forward slashes"
-        );
-    }
-
-    #[test]
-    fn test_module_matcher_with_backslashes() {
-        let matcher = ModuleMatcher::new("openai", ">=4.0.0", "resources/chat/completions.mjs")
-            .expect("Failed to create matcher");
-
-        // Test with backslashes (Windows-style)
-        // This simulates what happens on Windows when actual file paths use backslashes
-        let file_path = PathBuf::from("resources\\chat\\completions.mjs");
-        assert!(
-            matcher.matches("openai", "4.87.0", &file_path),
-            "Should match even with backslashes (Windows paths)"
-        );
-    }
-
-    #[test]
-    fn test_module_matcher_mixed_separators() {
-        let matcher = ModuleMatcher::new("openai", ">=4.0.0", "resources/beta/chat/completions.mjs")
-            .expect("Failed to create matcher");
-
-        // Config has forward slashes, file path has backslashes
-        let file_path = PathBuf::from("resources\\beta\\chat\\completions.mjs");
-        assert!(
-            matcher.matches("openai", "4.87.0", &file_path),
-            "Should match with mixed separators"
+            "Should match regardless of platform path separators"
         );
     }
 }

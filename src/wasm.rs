@@ -31,7 +31,7 @@ impl From<ModuleType> for IsModule {
 }
 
 #[wasm_bindgen]
-/// The InstrumentationMatcher is responsible for matching specific modules
+/// The `InstrumentationMatcher` is responsible for matching specific modules
 pub struct InstrumentationMatcher(Instrumentor);
 
 #[wasm_bindgen]

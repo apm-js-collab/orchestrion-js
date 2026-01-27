@@ -18,7 +18,11 @@
  * Unless explicitly stated otherwise all files in this repository are licensed under the Apache-2.0 License.
  * This product includes software developed at Datadog (<https://www.datadoghq.com>/). Copyright 2025 Datadog, Inc.
  **/
-use std::{error::Error, path::PathBuf, sync::Arc};
+use std::{
+    error::Error,
+    path::{Path, PathBuf},
+    sync::Arc,
+};
 use swc::{
     config::{IsModule, SourceMapsConfig},
     sourcemap::SourceMap,
@@ -102,7 +106,7 @@ impl Instrumentor {
         &self,
         module_name: &str,
         version: &str,
-        file_path: &PathBuf,
+        file_path: &Path,
     ) -> InstrumentationVisitor {
         let instrumentations = self
             .instrumentations
