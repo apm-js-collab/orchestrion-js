@@ -18,7 +18,7 @@ pub struct ModuleMatcher {
     /// The name of the module you want to match
     pub name: String,
     /// The semver range that you want to match
-    #[tsify(type = "string")]
+    #[cfg_attr(feature = "wasm", tsify(type = "string"))]
     pub version_range: Range,
     /// The path of the file you want to match from the module root
     pub file_path: PathBuf,
@@ -122,5 +122,50 @@ impl InstrumentationConfig {
     #[must_use]
     pub fn matches(&self, module_name: &str, version: &str, file_path: &PathBuf) -> bool {
         self.module.matches(module_name, version, file_path)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_module_matcher_with_forward_slashes() {
+        let matcher = ModuleMatcher::new("openai", ">=4.0.0", "resources/chat/completions.mjs")
+            .expect("Failed to create matcher");
+
+        // Test with forward slashes (Unix-style)
+        let file_path = PathBuf::from("resources/chat/completions.mjs");
+        assert!(
+            matcher.matches("openai", "4.87.0", &file_path),
+            "Should match with forward slashes"
+        );
+    }
+
+    #[test]
+    fn test_module_matcher_with_backslashes() {
+        let matcher = ModuleMatcher::new("openai", ">=4.0.0", "resources/chat/completions.mjs")
+            .expect("Failed to create matcher");
+
+        // Test with backslashes (Windows-style)
+        // This simulates what happens on Windows when actual file paths use backslashes
+        let file_path = PathBuf::from("resources\\chat\\completions.mjs");
+        assert!(
+            matcher.matches("openai", "4.87.0", &file_path),
+            "Should match even with backslashes (Windows paths)"
+        );
+    }
+
+    #[test]
+    fn test_module_matcher_mixed_separators() {
+        let matcher = ModuleMatcher::new("openai", ">=4.0.0", "resources/beta/chat/completions.mjs")
+            .expect("Failed to create matcher");
+
+        // Config has forward slashes, file path has backslashes
+        let file_path = PathBuf::from("resources\\beta\\chat\\completions.mjs");
+        assert!(
+            matcher.matches("openai", "4.87.0", &file_path),
+            "Should match with mixed separators"
+        );
     }
 }
