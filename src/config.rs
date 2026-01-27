@@ -49,28 +49,25 @@ impl ModuleMatcher {
         // Temporary debug logging to diagnose Windows path matching issues
         // TODO: Remove or gate behind env var once issue is resolved
         println!("=== Path Matching Debug ===");
-        println!("  Module: {}", module_name);
-        println!("  Config path: {:?}", self.file_path);
-        println!("  Runtime path: {:?}", file_path);
-        println!("  Config path display: {}", self.file_path.display());
-        println!("  Runtime path display: {}", file_path.display());
+        println!("  Module: {module_name}");
+        println!("  Config path: {}", self.file_path.display());
+        println!("  Runtime path: {}", file_path.display());
 
         let direct_match = self.file_path == *file_path;
-        println!("  Direct comparison: {}", direct_match);
+        println!("  Direct comparison: {direct_match}");
 
         // Test component-based comparison
         let self_components: Vec<_> = self.file_path.components().collect();
         let file_components: Vec<_> = file_path.components().collect();
         let component_match = self_components == file_components;
-        println!("  Component comparison: {}", component_match);
-        println!("  Config components: {:?}", self_components);
-        println!("  Runtime components: {:?}", file_components);
+        println!("  Component comparison: {component_match}");
+        println!("  Config components: {self_components:?}");
+        println!("  Runtime components: {file_components:?}");
 
-        let result = self.name == module_name
-            && version.satisfies(&self.version_range)
-            && direct_match;
+        let result =
+            self.name == module_name && version.satisfies(&self.version_range) && direct_match;
 
-        println!("  Match result: {}", result);
+        println!("  Match result: {result}");
         println!("=========================");
 
         result
