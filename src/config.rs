@@ -46,31 +46,15 @@ impl ModuleMatcher {
             }
         };
 
-        // Temporary debug logging to diagnose Windows path matching issues
-        // TODO: Remove or gate behind env var once issue is resolved
-        println!("=== Path Matching Debug ===");
-        println!("  Module: {module_name}");
-        println!("  Config path: {}", self.file_path.display());
-        println!("  Runtime path: {}", file_path.display());
-
-        let direct_match = self.file_path == *file_path;
-        println!("  Direct comparison: {direct_match}");
-
-        // Test component-based comparison
+        // Compare path components instead of direct PathBuf comparison.
+        // This handles cases where config uses forward slashes ("resources/chat/completions.mjs")
+        // but Windows runtime resolves to backslashes ("resources\chat\completions.mjs")
         let self_components: Vec<_> = self.file_path.components().collect();
         let file_components: Vec<_> = file_path.components().collect();
-        let component_match = self_components == file_components;
-        println!("  Component comparison: {component_match}");
-        println!("  Config components: {self_components:?}");
-        println!("  Runtime components: {file_components:?}");
 
-        let result =
-            self.name == module_name && version.satisfies(&self.version_range) && direct_match;
-
-        println!("  Match result: {result}");
-        println!("=========================");
-
-        result
+        self.name == module_name
+            && version.satisfies(&self.version_range)
+            && self_components == file_components
     }
 }
 
