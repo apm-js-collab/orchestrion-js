@@ -47,16 +47,10 @@ impl ModuleMatcher {
             }
         };
 
-        // Compare path components for cross-platform compatibility
+        // Compare path components as strings for cross-platform compatibility
         // This handles both forward slashes (configs) and backslashes (Windows runtime)
-        let config_components: Vec<_> = self.file_path.components().collect();
-        let runtime_components: Vec<_> = file_path.components().collect();
-
-        // Debug logging to understand what's happening on Windows
-        println!("Matching {module_name} against {}", self.name);
-        println!("Config path: {:?}, components: {:?}", self.file_path, config_components);
-        println!("Runtime path: {:?}, components: {:?}", file_path, runtime_components);
-        println!("Components match: {}", config_components == runtime_components);
+        let config_components: Vec<_> = self.file_path.components().map(|c| c.as_os_str()).collect();
+        let runtime_components: Vec<_> = file_path.components().map(|c| c.as_os_str()).collect();
 
         self.name == module_name
             && version.satisfies(&self.version_range)
@@ -156,5 +150,29 @@ mod tests {
             matcher.matches("openai", "4.87.0", &file_path),
             "Should match regardless of platform path separators"
         );
+    }
+
+    #[test]
+    fn test_pathbuf_separator_handling() {
+        // Test how PathBuf handles different separators
+        let forward = PathBuf::from("resources/chat/completions.mjs");
+        let backward = PathBuf::from("resources\\chat\\completions.mjs");
+
+        let forward_components: Vec<_> = forward.components().map(|c| c.as_os_str()).collect();
+        let backward_components: Vec<_> = backward.components().map(|c| c.as_os_str()).collect();
+
+        eprintln!("Forward path: {forward:?}");
+        eprintln!("Forward components: {forward_components:?}");
+        eprintln!("Backward path: {backward:?}");
+        eprintln!("Backward components: {backward_components:?}");
+        eprintln!("Components equal: {}", forward_components == backward_components);
+
+        // On Windows, both should be treated as separators and produce same components
+        // On Unix, backslash is NOT a separator, so they'll be different
+        #[cfg(windows)]
+        assert_eq!(forward_components, backward_components, "On Windows, forward and backslash should both be separators");
+
+        #[cfg(not(windows))]
+        assert_ne!(forward_components, backward_components, "On Unix, backslash is not a separator");
     }
 }
