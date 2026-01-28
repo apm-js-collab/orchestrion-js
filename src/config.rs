@@ -47,14 +47,18 @@ impl ModuleMatcher {
             }
         };
 
-        // Compare path components as strings for cross-platform compatibility
-        // This handles both forward slashes (configs) and backslashes (Windows runtime)
-        let config_components: Vec<_> = self.file_path.components().map(|c| c.as_os_str()).collect();
-        let runtime_components: Vec<_> = file_path.components().map(|c| c.as_os_str()).collect();
+        // Normalize paths to forward slashes for comparison
+        // This is necessary because:
+        // 1. Configs always use forward slashes
+        // 2. On Windows, runtime paths use backslashes
+        // 3. WASM (wasm32-unknown-unknown) always uses Unix path semantics where
+        //    backslash is NOT a separator, so component comparison doesn't work
+        let config_normalized = self.file_path.to_string_lossy().replace('\\', "/");
+        let runtime_normalized = file_path.to_string_lossy().replace('\\', "/");
 
         self.name == module_name
             && version.satisfies(&self.version_range)
-            && config_components == runtime_components
+            && config_normalized == runtime_normalized
     }
 }
 
