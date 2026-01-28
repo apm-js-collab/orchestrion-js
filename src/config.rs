@@ -47,10 +47,14 @@ impl ModuleMatcher {
             }
         };
 
-        // TESTING: Use original main branch code to verify test fails on Windows
+        // Compare path components for cross-platform compatibility
+        // This handles both forward slashes (configs) and backslashes (Windows runtime)
+        let config_components: Vec<_> = self.file_path.components().collect();
+        let runtime_components: Vec<_> = file_path.components().collect();
+
         self.name == module_name
             && version.satisfies(&self.version_range)
-            && self.file_path == *file_path
+            && config_components == runtime_components
     }
 }
 
