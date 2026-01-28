@@ -29,10 +29,14 @@ impl ModuleMatcher {
     /// # Errors
     /// Returns an error if the version range cannot be parsed.
     pub fn new(name: &str, version_range: &str, file_path: &str) -> Result<Self, SemverError> {
+        // Normalize file_path by splitting on forward slashes and building a proper PathBuf
+        // This ensures cross-platform compatibility (forward slashes in configs work on Windows)
+        let normalized_path = file_path.split('/').collect::<PathBuf>();
+
         Ok(Self {
             name: name.to_string(),
             version_range: Range::parse(version_range)?,
-            file_path: PathBuf::from(file_path),
+            file_path: normalized_path,
         })
     }
 
@@ -47,8 +51,9 @@ impl ModuleMatcher {
         };
 
         // Compare path components instead of direct PathBuf comparison.
-        // This handles cases where config uses forward slashes ("resources/chat/completions.mjs")
-        // but Windows runtime resolves to backslashes ("resources\chat\completions.mjs")
+        // The config path was normalized in new() to use platform separators,
+        // and runtime paths come from Node.js with platform separators,
+        // so component comparison should match correctly across platforms.
         let self_components: Vec<_> = self.file_path.components().collect();
         let file_components: Vec<_> = file_path.components().collect();
 
