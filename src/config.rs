@@ -29,14 +29,11 @@ impl ModuleMatcher {
     /// # Errors
     /// Returns an error if the version range cannot be parsed.
     pub fn new(name: &str, version_range: &str, file_path: &str) -> Result<Self, SemverError> {
-        // Normalize file_path by splitting on forward slashes and building a proper PathBuf
-        // This ensures cross-platform compatibility (forward slashes in configs work on Windows)
-        let normalized_path = file_path.split('/').collect::<PathBuf>();
-
         Ok(Self {
             name: name.to_string(),
             version_range: Range::parse(version_range)?,
-            file_path: normalized_path,
+            // Store as-is, we'll normalize for comparison
+            file_path: PathBuf::from(file_path),
         })
     }
 
@@ -50,16 +47,24 @@ impl ModuleMatcher {
             }
         };
 
-        // Compare path components instead of direct PathBuf comparison.
-        // The config path was normalized in new() to use platform separators,
-        // and runtime paths come from Node.js with platform separators,
-        // so component comparison should match correctly across platforms.
-        let self_components: Vec<_> = self.file_path.components().collect();
-        let file_components: Vec<_> = file_path.components().collect();
+        // Normalize both paths to forward slashes for comparison
+        // This handles cross-platform differences (Windows backslashes vs Unix forward slashes)
+        let normalize_path = |p: &Path| -> String {
+            p.components()
+                .filter_map(|c| match c {
+                    std::path::Component::Normal(s) => s.to_str(),
+                    _ => None,
+                })
+                .collect::<Vec<_>>()
+                .join("/")
+        };
+
+        let config_normalized = normalize_path(&self.file_path);
+        let runtime_normalized = normalize_path(file_path);
 
         self.name == module_name
             && version.satisfies(&self.version_range)
-            && self_components == file_components
+            && config_normalized == runtime_normalized
     }
 }
 
