@@ -169,14 +169,23 @@ mod tests {
         eprintln!("Forward components: {forward_components:?}");
         eprintln!("Backward path: {backward:?}");
         eprintln!("Backward components: {backward_components:?}");
-        eprintln!("Components equal: {}", forward_components == backward_components);
+        eprintln!(
+            "Components equal: {}",
+            forward_components == backward_components
+        );
 
         // On Windows, both should be treated as separators and produce same components
         // On Unix, backslash is NOT a separator, so they'll be different
         #[cfg(windows)]
-        assert_eq!(forward_components, backward_components, "On Windows, forward and backslash should both be separators");
+        assert_eq!(
+            forward_components, backward_components,
+            "On Windows, forward and backslash should both be separators"
+        );
 
         #[cfg(not(windows))]
-        assert_ne!(forward_components, backward_components, "On Unix, backslash is not a separator");
+        assert_ne!(
+            forward_components, backward_components,
+            "On Unix, backslash is not a separator"
+        );
     }
 }
