@@ -47,20 +47,10 @@ impl ModuleMatcher {
             }
         };
 
-        // Normalize both paths to forward slashes for comparison
+        // Normalize paths by replacing backslashes with forward slashes for comparison
         // This handles cross-platform differences (Windows backslashes vs Unix forward slashes)
-        let normalize_path = |p: &Path| -> String {
-            p.components()
-                .filter_map(|c| match c {
-                    std::path::Component::Normal(s) => s.to_str(),
-                    _ => None,
-                })
-                .collect::<Vec<_>>()
-                .join("/")
-        };
-
-        let config_normalized = normalize_path(&self.file_path);
-        let runtime_normalized = normalize_path(file_path);
+        let config_normalized = self.file_path.to_string_lossy().replace('\\', "/");
+        let runtime_normalized = file_path.to_string_lossy().replace('\\', "/");
 
         self.name == module_name
             && version.satisfies(&self.version_range)
