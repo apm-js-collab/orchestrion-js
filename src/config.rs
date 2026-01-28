@@ -52,6 +52,12 @@ impl ModuleMatcher {
         let config_components: Vec<_> = self.file_path.components().collect();
         let runtime_components: Vec<_> = file_path.components().collect();
 
+        // Debug logging to understand what's happening on Windows
+        println!("Matching {module_name} against {}", self.name);
+        println!("Config path: {:?}, components: {:?}", self.file_path, config_components);
+        println!("Runtime path: {:?}, components: {:?}", file_path, runtime_components);
+        println!("Components match: {}", config_components == runtime_components);
+
         self.name == module_name
             && version.satisfies(&self.version_range)
             && config_components == runtime_components
