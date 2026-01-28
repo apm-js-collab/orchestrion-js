@@ -52,6 +52,19 @@ impl ModuleMatcher {
         let config_normalized = self.file_path.to_string_lossy().replace('\\', "/");
         let runtime_normalized = file_path.to_string_lossy().replace('\\', "/");
 
+        // DEBUG: Log path comparison on Windows
+        if cfg!(target_os = "windows") || std::env::var("DEBUG_PATH_MATCHING").is_ok() {
+            eprintln!("=== PATH MATCHING DEBUG ===");
+            eprintln!("  Module: {module_name} (looking for: {})", self.name);
+            eprintln!("  Config path: {}", self.file_path.display());
+            eprintln!("  Runtime path: {}", file_path.display());
+            eprintln!("  Config normalized: {config_normalized}");
+            eprintln!("  Runtime normalized: {runtime_normalized}");
+            eprintln!("  Paths match: {}", config_normalized == runtime_normalized);
+            eprintln!("  Version OK: {}", version.satisfies(&self.version_range));
+            eprintln!("==========================");
+        }
+
         self.name == module_name
             && version.satisfies(&self.version_range)
             && config_normalized == runtime_normalized
