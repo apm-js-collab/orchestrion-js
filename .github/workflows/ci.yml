@@ -38,6 +38,9 @@ jobs:
         run: cargo fmt --all -- --check
       - name: Build and Test wasm
         run: npm install && npm run build && npm test
+      - name: Run Windows path diagnostic (Windows only)
+        if: matrix.os == 'windows-latest'
+        run: node test-module-details.mjs
       # This check is currently failing even after updating the license file.
       # - name: Install license tool
       #   run: cargo install dd-rust-license-tool
