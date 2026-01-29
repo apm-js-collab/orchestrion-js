@@ -26,6 +26,7 @@
   },
   "devDependencies": {
     "@types/node": "^18.0.0",
+    "module-details-from-path": "^1.0.4",
     "source-map": "^0.7.6",
     "typescript": "^5.8.3",
     "vitest": "^3.2.4",
