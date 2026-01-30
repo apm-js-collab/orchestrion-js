@@ -41,6 +41,9 @@ jobs:
       - name: Run Windows path diagnostic (Windows only)
         if: matrix.os == 'windows-latest'
         run: node test-module-details.mjs
+      - name: Test module-details-from-path on Windows
+        if: matrix.os == 'windows-latest'
+        run: node test-module-details-windows.mjs
       # This check is currently failing even after updating the license file.
       # - name: Install license tool
       #   run: cargo install dd-rust-license-tool
