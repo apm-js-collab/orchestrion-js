@@ -90,3 +90,27 @@ pub fn create(
 ) -> InstrumentationMatcher {
     InstrumentationMatcher(Instrumentor::new(Config::new(configs, dc_module)))
 }
+
+/// Debug function to show how paths are normalized in WASM.
+/// Returns a JSON string with the normalized paths.
+#[wasm_bindgen(js_name = "debugPathNormalization")]
+pub fn debug_path_normalization(config_path: &str, runtime_path: &str) -> String {
+    let config_buf = PathBuf::from(config_path);
+    let runtime_buf = PathBuf::from(runtime_path);
+
+    let config_normalized = config_buf.to_string_lossy().replace('\\', "/");
+    let runtime_normalized = runtime_buf.to_string_lossy().replace('\\', "/");
+
+    // Escape backslashes for JSON
+    let config_escaped = config_path.replace('\\', "\\\\");
+    let runtime_escaped = runtime_path.replace('\\', "\\\\");
+
+    format!(
+        r#"{{"configOriginal":"{}","configNormalized":"{}","runtimeOriginal":"{}","runtimeNormalized":"{}","match":{}}}"#,
+        config_escaped,
+        config_normalized,
+        runtime_escaped,
+        runtime_normalized,
+        config_normalized == runtime_normalized
+    )
+}
