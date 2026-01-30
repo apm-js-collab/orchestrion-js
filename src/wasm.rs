@@ -94,6 +94,7 @@ pub fn create(
 /// Debug function to show how paths are normalized in WASM.
 /// Returns a JSON string with the normalized paths.
 #[wasm_bindgen(js_name = "debugPathNormalization")]
+#[must_use]
 pub fn debug_path_normalization(config_path: &str, runtime_path: &str) -> String {
     let config_buf = PathBuf::from(config_path);
     let runtime_buf = PathBuf::from(runtime_path);
