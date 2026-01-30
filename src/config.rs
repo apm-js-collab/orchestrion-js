@@ -39,12 +39,10 @@ impl ModuleMatcher {
 
     #[must_use]
     pub fn matches(&self, module_name: &str, version: &str, file_path: &Path) -> bool {
-        println!("=== MATCH CALLED: module={module_name}, version={version}, file_path={}", file_path.display());
-
         let version: Version = match version.parse() {
             Ok(v) => v,
             Err(e) => {
-                println!("ERROR: Failed to parse version {version}: {e}");
+                println!("Failed to parse version {version}: {e}");
                 return false;
             }
         };
@@ -58,16 +56,9 @@ impl ModuleMatcher {
         let config_normalized = self.file_path.to_string_lossy().replace('\\', "/");
         let runtime_normalized = file_path.to_string_lossy().replace('\\', "/");
 
-        println!("  config_path: {} -> {config_normalized}", self.file_path.display());
-        println!("  runtime_path: {} -> {runtime_normalized}", file_path.display());
-
-        let result = self.name == module_name
+        self.name == module_name
             && version.satisfies(&self.version_range)
-            && config_normalized == runtime_normalized;
-
-        println!("  result: {result}");
-
-        result
+            && config_normalized == runtime_normalized
     }
 }
 
