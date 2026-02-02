@@ -56,6 +56,16 @@ impl ModuleMatcher {
         let config_normalized = self.file_path.to_string_lossy().replace('\\', "/");
         let runtime_normalized = file_path.to_string_lossy().replace('\\', "/");
 
+        // TEMPORARY DEBUG
+        if module_name.contains("openai") {
+            println!("[RUST DEBUG] matches() called:");
+            println!("  module_name: {} == {}: {}", self.name, module_name, self.name == module_name);
+            println!("  version: {} satisfies {}: {}", version, self.version_range, version.satisfies(&self.version_range));
+            println!("  config_path: {}", config_normalized);
+            println!("  runtime_path: {}", runtime_normalized);
+            println!("  paths match: {}", config_normalized == runtime_normalized);
+        }
+
         self.name == module_name
             && version.satisfies(&self.version_range)
             && config_normalized == runtime_normalized
