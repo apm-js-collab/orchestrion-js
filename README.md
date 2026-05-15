@@ -1,3 +1,10 @@
+> [!IMPORTANT]  
+> This repository is no longer the source of truth. It was utilized during a
+> transition period. The main repository is now located at
+> https://github.com/nodejs/orchestrion-js
+>
+> Please utilize that repository to base your contributions on.
+
 # `@apm-js-collab/code-transformer`
 
 This is a fork of
